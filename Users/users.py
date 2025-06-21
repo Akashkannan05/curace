@@ -267,8 +267,9 @@ class EditUserResource(Resource):
             # if objectId is None:
             #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
             # objectId=fernet.decrypt(objectId).decode()
-            objectId=fernet.decrypt(args.get('objectId')).decode()
+            
             args=user_edit_args.parse_args()
+            objectId=fernet.decrypt(args.get('objectId')).decode()
             current_user_email=get_jwt_identity()
             user=UserModel.objects.get(email=current_user_email)
             if user.userRole!="Admin":
@@ -301,7 +302,7 @@ class EditUserResource(Resource):
         except DoesNotExist as e:
             return ({"edit":"failed","error":"There is no account with this objectId"},HTTPStatus.NOT_FOUND)
         except Exception as e:
-            return ({"edit":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
+            return ({"edit":"failed","error":f"Something went wrong contact admin team {e}"},HTTPStatus.CONFLICT)
 
         
 api.add_resource(EditUserResource,"/edit/")
