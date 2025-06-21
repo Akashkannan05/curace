@@ -60,7 +60,7 @@ class UserLoginResourse(Resource):
             return ({"login":"failed","error":"There is no account with this email"},HTTPStatus.NOT_FOUND)
         except Exception as e:
             #raise ValidationError(e) 
-            return ({"login":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
+            return ({"login":"failed","error":str(e)},HTTPStatus.CONFLICT)
     
     def get(self):
         user=UserModel(username="Ozone faraday",email="akash2005k26kaniyur12@gmail.com",userRole="Admin",password=generate_password_hash("pass143"),status="Active")
@@ -116,7 +116,7 @@ class AddUserResourse(Resource):
             print("_____________>",encrypted_email)
             return ({"user":"success","msg":"user was added successfully"})
         except Exception as e:
-            return ({"user":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
+            return ({"user":"failed",f"error":"Something went wrong contact admin team{e}"},HTTPStatus.CONFLICT)
 
 api.add_resource(AddUserResourse,'/add/')
 
@@ -168,17 +168,15 @@ class  ListUserResource(Resource):
             print("_________",user_list)
             output=[]
             for i in user_list:
-                print(i)
                 user_data={}
-                
-                user_data['objectId'] = fernet.encrypt(str(i.pk).encode())
+                user_data['objectId'] = str(fernet.encrypt(str(i.pk).encode()))
                 user_data['username']=i.username
                 user_data['email']=i.email
                 user_data['userRole']=i.userRole
                 user_data['status']=i.status
-                user_data['createdOn']=removeTimeFromDate(i.createdOn)
+                user_data['createdOn']=str(i.createdOn)
                 output.append(user_data)
-                print(output)
+            print(output)
             return (jsonify(output))
         except DoesNotExist as e:
             return ({"users":"failed","error":"There is no account with this email"},HTTPStatus.NOT_FOUND)
