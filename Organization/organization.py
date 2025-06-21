@@ -81,9 +81,10 @@ add_organization_args.add_argument("city",type=str,help="Enter the city",require
 class AddOrganizationResource(Resource):
 
     def get(slef):
-        organization=OrganizationModel(name="Faraday Ozone",contactName="John Smith",email="akash2005k26kaniyur12@gmail.com",customerType="Owner")
+        organization=OrganizationModel(name="Faraday Ozone",contactName="Company",email="akash2005k26kaniyur12@gmail.com",customerType="Owner",status="Active",
+        phoneNo="123456789",address="address",city="city",state="state",country="country")                               
         organization.save()
-        user=UserModel.objects.get(email="akash2005k26kaniyur1@gmail.com")
+        user=UserModel.objects.get(email="akash2005k26kaniyur12@gmail.com")
         user.organization=organization.pk
         user.save()
         return ({"organization":"Done"})
