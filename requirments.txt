@@ -1,0 +1,12 @@
+flask
+flask_restful
+flask_cors
+flask_mail
+flask_caching
+flask_jwt_extended
+config
+mongoengine
+cryptography
+werkzeug
+dotenv
+datetime
