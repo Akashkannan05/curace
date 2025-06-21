@@ -267,7 +267,7 @@ class EditUserResource(Resource):
             # if objectId is None:
             #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
             # objectId=fernet.decrypt(objectId).decode()
-            objectId=args.get('objectId')
+            objectId=fernet.decrypt(args.get('objectId')).decode()
             args=user_edit_args.parse_args()
             current_user_email=get_jwt_identity()
             user=UserModel.objects.get(email=current_user_email)
