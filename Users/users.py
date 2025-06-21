@@ -254,7 +254,7 @@ api.add_resource(UserStatusInactivateResource,"/inactivate/<string:objectId>")
 
 
 user_edit_args=reqparse.RequestParser()
-# user_edit_args.add_argument('objectId',type=str,help="Enter the id",required=True)
+user_edit_args.add_argument('objectId',type=str,help="Enter the id",required=True)
 user_edit_args.add_argument('username',type=str,help="enter the username",required=False)
 user_edit_args.add_argument('email',type=str,help="enter the email",required=False)
 user_edit_args.add_argument('userRole',type=str,help="Enter the user role",required=False)
@@ -262,11 +262,12 @@ user_edit_args.add_argument('userRole',type=str,help="Enter the user role",requi
 class EditUserResource(Resource):
 
     @jwt_required()
-    def patch(self,objectId):
+    def patch(self):
         try:
-            if objectId is None:
-                return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
-            objectId=fernet.decrypt(objectId).decode()
+            # if objectId is None:
+            #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
+            # objectId=fernet.decrypt(objectId).decode()
+            objectId=args.get('objectId')
             args=user_edit_args.parse_args()
             current_user_email=get_jwt_identity()
             user=UserModel.objects.get(email=current_user_email)
@@ -303,4 +304,4 @@ class EditUserResource(Resource):
             return ({"edit":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
 
         
-api.add_resource(EditUserResource,"/edit/<string:objectId>")
+api.add_resource(EditUserResource,"/edit/")
