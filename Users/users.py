@@ -183,7 +183,7 @@ class  ListUserResource(Resource):
         except DoesNotExist as e:
             return ({"users":"failed","error":"There is no account with this email"},HTTPStatus.NOT_FOUND)
         except Exception as e:
-            return ({"users":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
+            return ({"users":"failed","error":f"Something went wrong contact admin team {e}"},HTTPStatus.CONFLICT)
 
 api.add_resource(ListUserResource,"/") 
 
