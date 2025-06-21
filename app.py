@@ -36,4 +36,4 @@ app.register_blueprint(user_bp, url_prefix="/users")
 app.register_blueprint(organization_bp,url_prefix="/organization")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True,host="0.0.0.0")
