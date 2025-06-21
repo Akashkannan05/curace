@@ -38,7 +38,7 @@ class ListOrganizationResource(Resource):
             columns=current_user.organizationColumns
             for i in organization_list:
                 organization_data={}
-                organization_data['objectId']=fernet.encrypt((i.pk).encode())
+                organization_data['objectId']=fernet.encrypt(str(i.pk).encode())
                 organization_data['organizationName']=i.name
                 if 'status' in columns:
                     organization_data['status']=i.status

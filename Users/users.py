@@ -170,7 +170,8 @@ class  ListUserResource(Resource):
             for i in user_list:
                 print(i)
                 user_data={}
-                user_data['objectId']=fernet.encrypt((i.pk).encode())
+                
+                user_data['objectId'] = fernet.encrypt(str(i.pk).encode())
                 user_data['username']=i.username
                 user_data['email']=i.email
                 user_data['userRole']=i.userRole
