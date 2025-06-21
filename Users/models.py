@@ -1,14 +1,17 @@
 from mongoengine import *
 from datetime import date
+from dotenv import load_dotenv
+import os
 
 # connect('DataBase')
 
-connect(db='ozopool_iot',
-        host="62.72.13.179",
-        port=27017,
-        username="ozopool_iot",
-        password="Faraday@2023",
-        authentication_source= "ozopool_iot"
+load_dotenv()
+connect(db=os.getenv('DB'),
+        host=os.getenv('DB_HOST'),
+        port=os.getenv('DB_PORT'),
+        username= os.getenv("DB_USERNAME"),
+        password=os.getenv("DB_PASSWORD"),
+        authentication_source= os.getenv("DB_AUTHENTICATION_SOURCE")
 )
 
 
