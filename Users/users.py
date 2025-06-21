@@ -169,7 +169,7 @@ class  ListUserResource(Resource):
             output=[]
             for i in user_list:
                 user_data={}
-                user_data['objectId'] = str(fernet.encrypt(str(i.pk).encode()))
+                user_data['objectId'] = (fernet.encrypt(str(i.pk).encode())).decode()
                 user_data['username']=i.username
                 user_data['email']=i.email
                 user_data['userRole']=i.userRole
@@ -301,8 +301,8 @@ class EditUserResource(Resource):
             return ({"edit":"success"},HTTPStatus.ACCEPTED)
         except DoesNotExist as e:
             return ({"edit":"failed","error":"There is no account with this objectId"},HTTPStatus.NOT_FOUND)
-        except Exception as e:
-            return ({"edit":"failed","error":f"Something went wrong contact admin team {e}"},HTTPStatus.CONFLICT)
+        # except Exception as e:
+        #     return ({"edit":"failed","error":f"Something went wrong contact admin team {e}"},HTTPStatus.CONFLICT)
 
         
 api.add_resource(EditUserResource,"/edit/")
