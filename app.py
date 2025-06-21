@@ -19,6 +19,8 @@ app.config.from_object(Config)
 app.config.setdefault('JWT_SECRET_KEY', "a763b1ba79ead83dc155359b60f86d9a38212c3958fe7f7530681aa49d035d4e")
 
 api = Api(app)
+app.config["CORS_RESOURCES"] = {r"/*": {"origins": "http://localhost:5173"}}
+app.config["CORS_SUPPORTS_CREDENTIALS"] = True
 
 CORS(
     app,
