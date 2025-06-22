@@ -231,8 +231,8 @@ class InactivateOrganizationResource(Resource):
 
 api.add_resource(InactivateOrganizationResource,'/inactivate/')
 
-# detail_organization_args=reqparse.RequestParser()
-# detail_organization_args.add_argument("objectId",type=str,help="Enter the objectid",required=True)
+detail_organization_args=reqparse.RequestParser()
+detail_organization_args.add_argument("objectId",type=str,help="Enter the objectid",required=True)
 
 class DetailOrganizationResource(Resource):
 
@@ -241,12 +241,12 @@ class DetailOrganizationResource(Resource):
         return '', 200
 
     @jwt_required()
-    def get(self,objectId):
+    def get(self):
         try:
-            if objectId is None:
-                return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
-            objectId=fernet.decrypt(objectId.encode()).decode()
-            # args=detail_organization_args.parse_args()
+            # if objectId is None:
+            #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
+            args=detail_organization_args.parse_args()
+            objectId=fernet.decrypt(args.get('objectId').encode()).decode()
             current_user_email=get_jwt_identity()
             user=UserModel.objects.get(email=current_user_email)
             user_organization=OrganizationModel.objects.filter(pk=user.organization).first()
@@ -292,4 +292,4 @@ class DetailOrganizationResource(Resource):
         except Exception as e:
             return ({"organization":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
 
-api.add_resource(DetailOrganizationResource,'/detail/<string:objectId>',methods=["GET", "OPTIONS"])
+api.add_resource(DetailOrganizationResource,'/detail/',methods=["GET", "OPTIONS"])
