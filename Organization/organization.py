@@ -243,6 +243,7 @@ class DetailOrganizationResource(Resource):
     @jwt_required()
     def get(self):
         try:
+            print("hello")
             # if objectId is None:
             #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
             args=detail_organization_args.parse_args()
@@ -290,6 +291,6 @@ class DetailOrganizationResource(Resource):
         except DoesNotExist as e:
             return ({"organization":"failed","error":"There is no account with this email"},HTTPStatus.NOT_FOUND)
         except Exception as e:
-            return ({"organization":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
+            return ({"organization":"failed","error":f"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
 
 api.add_resource(DetailOrganizationResource,'/detail/',methods=["GET", "OPTIONS"])
