@@ -38,7 +38,7 @@ class ListOrganizationResource(Resource):
             columns=current_user.organizationColumns
             for i in organization_list:
                 organization_data={}
-                organization_data['objectId']=fernet.encrypt(str(i.pk).encode())
+                organization_data['objectId']=fernet.encrypt(str(i.pk).encode()).decode()
                 organization_data['organizationName']=i.name
                 if 'status' in columns:
                     organization_data['status']=i.status
@@ -154,7 +154,7 @@ class setActivateFromPendingResource(Resource):
         try:
             if objectId is None:
                 return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
-            objectId=fernet.decrypt(objectId).decode()
+            objectId=fernet.decrypt(objectId.encode()).decode()
             # args=set_activate_from_pending_args.parse_args()
             email=fernet.decrypt(objectId).decode()
             organization=OrganizationModel.objects.get(email=email)
@@ -170,18 +170,18 @@ class setActivateFromPendingResource(Resource):
             
 api.add_resource(setActivateFromPendingResource,'/pending/<string:objectId>')
 
-# change_status_organization_args=reqparse.RequestParser()
-# change_status_organization_args.add_argument('objectId',type=str,help="Enter the object ID",required=True)
+change_status_organization_args=reqparse.RequestParser()
+change_status_organization_args.add_argument('objectId',type=str,help="Enter the object ID",required=True)
 
 class ActivateOrganizationResource(Resource):
 
     @jwt_required()
-    def patch(self,objectId):
+    def patch(self):
         try:
-            if objectId is None:
-                return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
-            objectId=fernet.decrypt(objectId).decode()
-            # args=set_activate_from_pending_args.parse_args()
+            # if objectId is None:
+            #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
+            args=change_status_organization_args.parse_args()
+            objectId=fernet.decrypt(args.get('objectId').encode()).decode()
             current_user_email=get_jwt_identity()
             current_user=UserModel.objects.get(email=current_user_email)
             if current_user.userRole!="Admin" or current_user.status!="Active":
@@ -200,17 +200,17 @@ class ActivateOrganizationResource(Resource):
         except Exception as e:
             return ({"activateOrganization":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
 
-api.add_resource(ActivateOrganizationResource,'/activate/<string:objectId>')
+api.add_resource(ActivateOrganizationResource,'/activate/')
 
 class InactivateOrganizationResource(Resource):
 
     @jwt_required()
-    def patch(self,objectId):
+    def patch(self):
         try:
-            if objectId is None:
-                return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
-            objectId=fernet.decrypt(objectId).decode()
-            # args=change_status_organization_args.parse_args()
+            # if objectId is None:
+            #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
+            args=change_status_organization_args.parse_args()
+            objectId=fernet.decrypt(args.get('objectId').encode()).decode()
             current_user_email=get_jwt_identity()
             current_user=UserModel.objects.get(email=current_user_email)
             if not (current_user.userRole=="Admin" and current_user.status=="Active"):
@@ -229,7 +229,7 @@ class InactivateOrganizationResource(Resource):
         except Exception as e:
             return ({"inactivateOrganization":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
 
-api.add_resource(InactivateOrganizationResource,'/inactivate/<string:objectId>')
+api.add_resource(InactivateOrganizationResource,'/inactivate/')
 
 # detail_organization_args=reqparse.RequestParser()
 # detail_organization_args.add_argument("objectId",type=str,help="Enter the objectid",required=True)
@@ -241,7 +241,7 @@ class DetailOrganizationResource(Resource):
         try:
             if objectId is None:
                 return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
-            objectId=fernet.decrypt(objectId).decode()
+            objectId=fernet.decrypt(objectId.encode()).decode()
             # args=detail_organization_args.parse_args()
             current_user_email=get_jwt_identity()
             user=UserModel.objects.get(email=current_user_email)
