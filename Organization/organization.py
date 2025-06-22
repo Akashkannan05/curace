@@ -109,7 +109,7 @@ class AddOrganizationResource(Resource):
             
             organization=OrganizationModel(
                 name=args.get("organizationName"),
-                status="Pending",
+                status="Active",
                 contactName=args.get('contactName'),
                 phoneNo=args.get('phoneNo'),
                 email=args.get('email'),
@@ -260,6 +260,7 @@ class DetailOrganizationResource(Resource):
             # if organization.assocaiteBy!=user_organization.pk:
             #     return ({"organization":"failed","error":"You can only access the details of your associated organization"},HTTPStatus.BAD_REQUEST)
             #Statistics still to do after the device section
+            print("__________")
             contactInformation={
                 "contactName":organization.contactName,
                 "email":organization.email,
