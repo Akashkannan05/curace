@@ -66,7 +66,8 @@ class UserLoginResourse(Resource):
         # user=UserModel(username="Ozone faraday",email="akash2005k26kaniyur12@gmail.com",userRole="Admin",password=generate_password_hash("pass143"),status="Active")
         # user.save()  
         # return {"username":"Ozone faraday"}
-        user=UserModel(username="Ashwin K ",email="akash2005kkaniyur12@gmail.com",userRole="Engineer",password=generate_password_hash("pass143"),status="Active")
+        organization=OrganizationModel.objects.filter(email="akash2005k26kaniyur12@gmail.com").first()
+        user=UserModel(username="Ashwin K ",email="akash2005kaniyur12@gmail.com",userRole="Engineer",password=generate_password_hash("pass143"),status="Active",organization=organization.pk)
         user.save()
         return {"username":"Ozone faraday"}
         
