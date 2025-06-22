@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from datetime import timedelta
 load_dotenv()
 
 def strToBool(value):
@@ -19,6 +20,11 @@ class Config:
     MAIL_USERNAME=os.getenv('MAIL_USERNAME')
     MAIL_PASSWORD=os.getenv('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER')
+    JWT_SECRET_KEY=os.getenv('JWT_SECRET_KEY')
+    CORS_RESOURCES={r"/*": {"origins": "http://localhost:5173"}}
+    CORS_SUPPORTS_CREDENTIALS=True
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
 
 
 class DevlopmentConfig(Config):
