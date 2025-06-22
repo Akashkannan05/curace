@@ -237,6 +237,7 @@ api.add_resource(InactivateOrganizationResource,'/inactivate/')
 class DetailOrganizationResource(Resource):
 
     def options(self, objectId=None):
+        print("Received OPTIONS preflight request for:", objectId)
         return '', 200
 
     @jwt_required()
@@ -291,4 +292,4 @@ class DetailOrganizationResource(Resource):
         except Exception as e:
             return ({"organization":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
 
-api.add_resource(DetailOrganizationResource,'/detail/<string:objectId>')
+api.add_resource(DetailOrganizationResource,'/detail/<string:objectId>',methods=["GET", "OPTIONS"])
