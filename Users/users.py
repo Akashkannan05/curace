@@ -136,7 +136,7 @@ class setPasswordResource(Resource):
             return ({"password":"failed","error":"password can not be an empty space"},HTTPStatus.BAD_REQUEST)
         if args.get('password')!=args.get('conformPassword'):
             return ({"password":"failed","error":"password should match the conform password"},HTTPStatus.BAD_REQUEST)
-        email=fernet.decrypt(encryption).decode()
+        email=fernet.decrypt(encryption.encode()).decode()
         try:
             user=UserModel.objects.get(email=email)
             print(user.username)
@@ -185,18 +185,18 @@ class  ListUserResource(Resource):
 
 api.add_resource(ListUserResource,"/") 
 
-# user_status_args=reqparse.RequestParser()
-# user_status_args.add_argument('objectId',type=str,help="Please enter the object id",required=True)
+user_status_args=reqparse.RequestParser()
+user_status_args.add_argument('objectId',type=str,help="Please enter the object id",required=True)
 
 class UserStatusActivateResource(Resource):
 
     @jwt_required()
-    def patch(self,objectId):
+    def patch(self):
         try:
-            if objectId is None:
-                return ({"status":"failed","error":"bojectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
-            # args=user_status_args.parse_args()
-            objectId=fernet.decrypt(objectId).decode()
+            # if objectId is None:
+            #     return ({"status":"failed","error":"bojectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
+            args=user_status_args.parse_args()
+            objectId=fernet.decrypt(args.get('objectId').encode()).decode()
             current_user_email=get_jwt_identity()
             user=UserModel.objects.get(email=current_user_email)
             if user.userRole!="Admin":
@@ -216,17 +216,17 @@ class UserStatusActivateResource(Resource):
         except Exception as e:
             return ({"status":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
 
-api.add_resource(UserStatusActivateResource,"/activate/<string:objectId>")
+api.add_resource(UserStatusActivateResource,"/activate/")
 
 class UserStatusInactivateResource(Resource):
 
     @jwt_required()
-    def patch(self,objectId):
+    def patch(self):
         try:
-            # args=user_status_args.parse_args()
-            if objectId is None:
-                return ({"status":"failed","error":"bojectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
-            objectId=fernet.decrypt(objectId).decode()
+            args=user_status_args.parse_args()
+            # if objectId is None:
+            #     return ({"status":"failed","error":"bojectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
+            objectId=fernet.decrypt(args.get('objectId').encode()).decode()
             current_user_email=get_jwt_identity()
             user=UserModel.objects.get(email=current_user_email)
             if user.userRole!="Admin":
@@ -250,7 +250,7 @@ class UserStatusInactivateResource(Resource):
         except Exception as e:
             return ({"status":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
 
-api.add_resource(UserStatusInactivateResource,"/inactivate/<string:objectId>")
+api.add_resource(UserStatusInactivateResource,"/inactivate/")
 
 
 user_edit_args=reqparse.RequestParser()
