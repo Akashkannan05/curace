@@ -236,6 +236,9 @@ api.add_resource(InactivateOrganizationResource,'/inactivate/')
 
 class DetailOrganizationResource(Resource):
 
+    def options(self, objectId=None):
+        return '', 200
+
     @jwt_required()
     def get(self,objectId):
         try:
