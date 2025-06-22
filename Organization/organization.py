@@ -236,9 +236,9 @@ detail_organization_args.add_argument("objectId",type=str,help="Enter the object
 
 class DetailOrganizationResource(Resource):
 
-    def options(self, objectId=None):
-        print("Received OPTIONS preflight request for:", objectId)
-        return '', 200
+    # def options(self, objectId=None):
+    #     print("Received OPTIONS preflight request for:", objectId)
+    #     return '', 200
 
     @jwt_required()
     def get(self):
@@ -248,6 +248,7 @@ class DetailOrganizationResource(Resource):
             #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
             args=detail_organization_args.parse_args()
             objectId=fernet.decrypt(args.get('objectId').encode()).decode()
+            print(objectId)
             current_user_email=get_jwt_identity()
             user=UserModel.objects.get(email=current_user_email)
             user_organization=OrganizationModel.objects.filter(pk=user.organization).first()
