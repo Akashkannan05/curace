@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint,jsonify,current_app
+from flask import Blueprint,jsonify,current_app,request
 from flask_restful import Api,Resource,reqparse
 from flask_jwt_extended import  jwt_required, get_jwt_identity
 from flask_mail import Mail, Message
@@ -231,8 +231,8 @@ class InactivateOrganizationResource(Resource):
 
 api.add_resource(InactivateOrganizationResource,'/inactivate/')
 
-detail_organization_args=reqparse.RequestParser()
-detail_organization_args.add_argument("objectId",type=str,help="Enter the objectid",required=True)
+# detail_organization_args=reqparse.RequestParser()
+# detail_organization_args.add_argument("objectId",type=str,help="Enter the objectid",required=True)
 
 class DetailOrganizationResource(Resource):
 
@@ -246,8 +246,8 @@ class DetailOrganizationResource(Resource):
             print("hello")
             # if objectId is None:
             #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
-            args=detail_organization_args.parse_args()
-            objectId=fernet.decrypt(args.get('objectId').encode()).decode()
+            # args=detail_organization_args.parse_args()
+            objectId=fernet.decrypt(request.args.get('objectId').encode()).decode()
             print(objectId)
             current_user_email=get_jwt_identity()
             user=UserModel.objects.get(email=current_user_email)
