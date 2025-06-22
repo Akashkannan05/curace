@@ -236,9 +236,9 @@ detail_organization_args.add_argument("objectId",type=str,help="Enter the object
 
 class DetailOrganizationResource(Resource):
 
-    def options(self, objectId=None):
-        print("Received OPTIONS preflight request for:", objectId)
-        return '', 200
+    # def options(self, objectId=None):
+    #     print("Received OPTIONS preflight request for:", objectId)
+    #     return '', 200
 
     @jwt_required()
     def get(self):
@@ -291,6 +291,6 @@ class DetailOrganizationResource(Resource):
         except DoesNotExist as e:
             return ({"organization":"failed","error":"There is no account with this email"},HTTPStatus.NOT_FOUND)
         except Exception as e:
-            return ({"organization":"failed","error":f"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
+            return ({"organization":"failed","error":f"Something went wrong contact admin team{e}"},HTTPStatus.CONFLICT)
 
-api.add_resource(DetailOrganizationResource,'/detail/',methods=["GET", "OPTIONS"])
+api.add_resource(DetailOrganizationResource,'/detail/')#,methods=["GET", "OPTIONS"]
