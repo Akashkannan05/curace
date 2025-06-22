@@ -236,9 +236,9 @@ detail_organization_args.add_argument("objectId",type=str,help="Enter the object
 
 class DetailOrganizationResource(Resource):
 
-    # def options(self, objectId=None):
-    #     print("Received OPTIONS preflight request for:", objectId)
-    #     return '', 200
+    def options(self, objectId=None):
+        print("Received OPTIONS preflight request for:", objectId)
+        return '', 200
 
     @jwt_required()
     def get(self):
