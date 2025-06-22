@@ -63,8 +63,11 @@ class UserLoginResourse(Resource):
             return ({"login":"failed","error":str(e)},HTTPStatus.CONFLICT)
     
     def get(self):
-        user=UserModel(username="Ozone faraday",email="akash2005k26kaniyur12@gmail.com",userRole="Admin",password=generate_password_hash("pass143"),status="Active")
-        user.save()  
+        # user=UserModel(username="Ozone faraday",email="akash2005k26kaniyur12@gmail.com",userRole="Admin",password=generate_password_hash("pass143"),status="Active")
+        # user.save()  
+        # return {"username":"Ozone faraday"}
+        user=UserModel(username="Ashwin K ",email="akash2005kkaniyur12@gmail.com",userRole="Engineer",password=generate_password_hash("pass143"),status="Active")
+        user.save()
         return {"username":"Ozone faraday"}
         
 api.add_resource(UserLoginResourse,'/login/')
