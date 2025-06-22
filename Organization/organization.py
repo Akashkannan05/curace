@@ -257,8 +257,8 @@ class DetailOrganizationResource(Resource):
             organization=OrganizationModel.objects.filter(pk=objectId).first()
             if organization is None:
                 return ({"organization":"failed","error":"There is no organization with this objectId"},HTTPStatus.NOT_FOUND)
-            if organization.assocaiteBy!=user_organization.pk:
-                return ({"organization":"failed","error":"You can only access the details of your associated organization"},HTTPStatus.BAD_REQUEST)
+            # if organization.assocaiteBy!=user_organization.pk:
+            #     return ({"organization":"failed","error":"You can only access the details of your associated organization"},HTTPStatus.BAD_REQUEST)
             #Statistics still to do after the device section
             contactInformation={
                 "contactName":organization.contactName,
