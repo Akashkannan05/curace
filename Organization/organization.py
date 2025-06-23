@@ -81,7 +81,7 @@ add_organization_args.add_argument("city",type=str,help="Enter the city",require
 class AddOrganizationResource(Resource):
 
     def get(slef):
-        organization=OrganizationModel(name="Faraday Ozone",contactName="Company",email="akash2005k26kaniyur12@gmail.com",customerType="Owner",status="Active",
+        organization=OrganizationModel(orgId=1,name="Faraday Ozone",contactName="Company",email="akash2005k26kaniyur12@gmail.com",customerType="Owner",status="Active",
         phoneNo="123456789",address="address",city="city",state="state",country="country")                               
         organization.save()
         user=UserModel.objects.get(email="akash2005k26kaniyur12@gmail.com")
@@ -106,8 +106,9 @@ class AddOrganizationResource(Resource):
                 return ({"addOrganization":"failed","error":"Email id already exisit"},HTTPStatus.BAD_REQUEST)
             if args.get('customerType')!='End Customer' and current_organization!="Owner":
                 return ({"addOrganization":"failed","error":"Only the owner can add the patner or another owner"},HTTPStatus.BAD_REQUEST)
-            
+            organization_count=OrganizationModel.objects.all().count()
             organization=OrganizationModel(
+                orgId=organization_count+1,
                 name=args.get("organizationName"),
                 status="Active",
                 contactName=args.get('contactName'),
@@ -258,6 +259,14 @@ class DetailOrganizationResource(Resource):
             organization=OrganizationModel.objects.filter(pk=objectId).first()
             if organization is None:
                 return ({"organization":"failed","error":"There is no organization with this objectId"},HTTPStatus.NOT_FOUND)
+            if organization.assocaiteBy is None:
+                assocaiteBy=None
+            else:
+                assocaiteByqs=OrganizationModel.objects.filter(pk=organization.assocaiteBy).first()
+                if assocaiteByqs is not None:
+                    assocaiteBy=assocaiteByqs.name
+                else:
+                    assocaiteBy=None
             # if organization.assocaiteBy!=user_organization.pk:
             #     return ({"organization":"failed","error":"You can only access the details of your associated organization"},HTTPStatus.BAD_REQUEST)
             #Statistics still to do after the device section
@@ -274,25 +283,43 @@ class DetailOrganizationResource(Resource):
                 "country":organization.country
             }
             organization_list_qs=OrganizationModel.objects.filter(assocaiteBy=organization.pk)
+            organization_list=[]
+            print(organization_list)
             if organization_list_qs :
-                organization_list=[org.to_mongo().to_dict() for org in organization_list_qs]
-            else:
-                organization_list=[]
+                for i in organization_list_qs:
+                    dictionary={
+                        "objectId":(fernet.encrypt(str(i.pk).encode())).decode(),
+                        "orgId":i.orgId,
+                        "customerName":i.contactName,
+                        "status":i.status,
+                        "state":i.state,
+                        "createdOn":str(i.createdOn)
+                    }
+                    organization_list.append(dictionary)
             users_list_qs=UserModel.objects.filter(organization=objectId)
+            user_list=[]
             if users_list_qs:
-                user_list=[user.to_mongo().to_dict() for user in users_list_qs]
-            else:
-                user_list=[]
+                for i in users_list_qs:
+                    dictionary={
+                        "objectId":(fernet.encrypt(str(i.pk).encode())).decode(),
+                        "username":i.username,
+                        "email":i.email,
+                        "role":i.userRole,
+                        "status":i.status,
+                        "createdOn":str(i.createdOn)
+                    }
+                    user_list.append(dictionary)
             #Still devices in need to be done
+            print(user_list)
             return ({
                 "name":organization.name,
                 "customerType":organization.customerType,
-                "assocaiteBy":organization.assocaiteBy,
+                "assocaitedPatner":assocaiteBy,
                 "status":organization.status,
                 "contactInformation":contactInformation,
                 "location":location,
-                "organizations":organization_list,
-                "users":user_list
+                "organizations":(organization_list),
+                "users":(user_list)
             })
 
         except DoesNotExist as e:
