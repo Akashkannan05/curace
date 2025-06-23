@@ -17,7 +17,7 @@ from Users.models import UserModel
 organization_bp=Blueprint("organization",__name__)
 api=Api(organization_bp)
 load_dotenv()
-fernet=Fernet(os.getenv('ENCRYPTION_KEY').encode())
+fernet=Fernet(os.getenv('ENCRYPTION_KEY').encode())  #byte stream
 
 class ListOrganizationResource(Resource):
 
@@ -271,17 +271,6 @@ class DetailOrganizationResource(Resource):
             #     return ({"organization":"failed","error":"You can only access the details of your associated organization"},HTTPStatus.BAD_REQUEST)
             #Statistics still to do after the device section
             print("__________")
-            contactInformation={
-                "contactName":organization.contactName,
-                "email":organization.email,
-                "phoneNo":organization.phoneNo
-            }
-            location={
-                "address":organization.address,
-                "city":organization.city,
-                "state":organization.state,
-                "country":organization.country
-            }
             organization_list_qs=OrganizationModel.objects.filter(assocaiteBy=organization.pk)
             organization_list=[]
             print(organization_list)
@@ -311,16 +300,35 @@ class DetailOrganizationResource(Resource):
                     user_list.append(dictionary)
             #Still devices in need to be done
             print(user_list)
-            return ({
-                "name":organization.name,
-                "customerType":organization.customerType,
-                "assocaitedPatner":assocaiteBy,
-                "status":organization.status,
-                "contactInformation":contactInformation,
-                "location":location,
-                "organizations":(organization_list),
-                "users":(user_list)
-            })
+            return ({"organization":{
+                        "id": "ORG001",
+                        "organizationName":organization.name,
+                        "customerType":organization.customerType,
+                        "associatedPartner":assocaiteBy,
+                        "status":organization.status,
+                        "contactName":organization.contactName,
+                        "email":organization.email,
+                        "phoneNo":organization.phoneNo,
+                        "address":organization.address,
+                        "city":organization.city,
+                        "state":organization.state,
+                        "country":organization.country,
+                        "statistics": {
+                            "totalDevices": 150,
+                            "activeDevices": 120,
+                            "needAttention": 15
+                            },
+                        "devices": [{
+                            "id": "DEV001",
+                            "customer": "Acme Corporation",
+                            "city": "Anytown",
+                            "state": "CA",
+                            "poolStatus": "Excellent",
+                            "createdOn": "2023-01-15"
+                            }],
+                        "organizations":organization_list,
+                        "users":user_list
+            }})
 
         except DoesNotExist as e:
             return ({"organization":"failed","error":"There is no account with this email"},HTTPStatus.NOT_FOUND)
