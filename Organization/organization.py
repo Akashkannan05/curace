@@ -276,9 +276,13 @@ class DetailOrganizationResource(Resource):
             organization_list_qs=OrganizationModel.objects.filter(assocaiteBy=organization.pk)
             if organization_list_qs :
                 organization_list=[org.to_mongo().to_dict() for org in organization_list_qs]
+            else:
+                organization_list=[]
             users_list_qs=UserModel.objects.filter(organization=objectId)
             if users_list_qs:
                 user_list=[user.to_mongo().to_dict() for user in users_list_qs]
+            else:
+                user_list=[]
             #Still devices in need to be done
             return ({
                 "name":organization.name,
