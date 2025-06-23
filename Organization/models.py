@@ -2,7 +2,7 @@ from mongoengine import *
 from datetime import date
 
 class OrganizationModel(Document):
-    orgId=IntField(unique=True)
+    orgId=IntField()
     name=StringField(required=True)
     status=StringField(required=True,choices=['Pending','Active','Inactive'],default='Pending')
     contactName=StringField(max_length=50,required=True)
