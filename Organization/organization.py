@@ -184,8 +184,8 @@ class ActivateOrganizationResource(Resource):
         try:
             # if objectId is None:
             #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
-            args=change_status_organization_args.parse_args()
-            objectId=fernet.decrypt(args.get('objectId').encode()).decode()
+            # args=change_status_organization_args.parse_args()
+            objectId=fernet.decrypt(request.args.get('objectId').encode()).decode()
             current_user_email=get_jwt_identity()
             current_user=UserModel.objects.get(email=current_user_email)
             if current_user.userRole!="Admin" or current_user.status!="Active":
@@ -217,7 +217,7 @@ class InactivateOrganizationResource(Resource):
             # if objectId is None:
             #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
             args=change_status_organization_args.parse_args()
-            objectId=fernet.decrypt(args.get('objectId').encode()).decode()
+            objectId=fernet.decrypt(request.args.get('objectId').encode()).decode()
             current_user_email=get_jwt_identity()
             current_user=UserModel.objects.get(email=current_user_email)
             if not (current_user.userRole=="Admin" and current_user.status=="Active"):
