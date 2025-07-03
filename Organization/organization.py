@@ -216,7 +216,7 @@ class InactivateOrganizationResource(Resource):
         try:
             # if objectId is None:
             #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
-            args=change_status_organization_args.parse_args()
+            # args=change_status_organization_args.parse_args()
             objectId=fernet.decrypt(request.args.get('objectId').encode()).decode()
             current_user_email=get_jwt_identity()
             current_user=UserModel.objects.get(email=current_user_email)
