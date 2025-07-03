@@ -176,8 +176,8 @@ change_status_organization_args=reqparse.RequestParser()
 change_status_organization_args.add_argument('objectId',type=str,help="Enter the object ID",required=True)
 
 class ActivateOrganizationResource(Resource):
-    def options(self):
-        return {}, 200
+    # def options(self):
+    #     return {}, 200
 
     @jwt_required()
     def patch(self):
