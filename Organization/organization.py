@@ -208,8 +208,8 @@ api.add_resource(ActivateOrganizationResource,'/activate/')
 
 class InactivateOrganizationResource(Resource):
 
-    def options(self):
-        return {}, 200
+    # def options(self):
+    #     return {}, 200
 
     @jwt_required()
     def patch(self):
