@@ -211,11 +211,12 @@ class InactivateOrganizationResource(Resource):
     # def options(self):
     #     return {}, 200
     def options(self):
-        response = make_response()
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add("Access-Control-Allow-Headers", "Authorization, Content-Type")
-        response.headers.add("Access-Control-Allow-Methods", "PATCH, OPTIONS")
-        return response, 200
+        headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+        'Access-Control-Allow-Methods': 'PATCH, OPTIONS'
+        }
+        return {}, 200, headers
 
     @jwt_required()
     def patch(self):
