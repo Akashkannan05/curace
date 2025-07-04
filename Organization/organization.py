@@ -198,16 +198,20 @@ class ActivateOrganizationResource(Resource):
             objectId=fernet.decrypt(request.args.get('objectId').encode()).decode()
             current_user_email=get_jwt_identity()
             current_user=UserModel.objects.get(email=current_user_email)
+            print(current_user.userRole)
             if current_user.userRole!="Admin" or current_user.status!="Active":
                 return ({"activateOrganization":"failed","error":"Only active admin can change the status"},HTTPStatus.BAD_REQUEST)
             change_organization=OrganizationModel.objects.filter(pk=objectId).first()
+            print(change_organization)
             if change_organization is None:
                 return ({"activateOrganization":"failed","error":"There is no organization with this objectId"},HTTPStatus.NOT_FOUND)
             current_organization=OrganizationModel.objects.filter(pk=current_user.organization).first()
+            print("_J_J_J_J)I)")
             if current_organization is None:
                 return ({"activateOrganization":"failed","error":"There is no organization for this user organization ID"},HTTPStatus.NOT_FOUND)
             if current_user.organization!=change_organization.assocaiteBy or current_organization.customerType=="Owner":
                 return ({"activateOrganization":"failed","error":"Only you can change the organization under you or assosiated by you"},HTTPStatus.NOT_FOUND)
+            print("JKJKNBBBBJVHV")
             change_organization.status='Active'
             change_organization.save()
             return ({"activateOrganization":"success"},HTTPStatus.OK)
