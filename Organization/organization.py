@@ -363,9 +363,59 @@ class DetailOrganizationResource(Resource):
 
 api.add_resource(DetailOrganizationResource,'/detail/')#,methods=["GET", "OPTIONS"]
 
-# edit_organization_args=reqparse.RequestParser()
-# edit_organization_args
-# class EditOrganizationResource(Resource):
+edit_organization_args=reqparse.RequestParser()
+edit_organization_args.add_argument("objectId",type=str,help="ID of the organization",required=True)
+edit_organization_args.add_argument("name",type=str,help="Name of the organization",required=False)
+edit_organization_args.add_argument("status",type=str,help="Status of the organization",required=False)
+edit_organization_args.add_argument("contactName",type=str,help="Contact name of the organization",required=False)
+edit_organization_args.add_argument("phoneNo",type=str,help="Phone number of the organization",required=False)
+edit_organization_args.add_argument("email",type=str,help="Email of the organization",required=False)
+edit_organization_args.add_argument("address",type=str,help="Address of the organization",required=False)
+edit_organization_args.add_argument("city",type=str,help="City of the organization",required=False)
+edit_organization_args.add_argument("state",type=str,help="State of the organization",required=False)
+edit_organization_args.add_argument("country",type=str,help="Country of the organization",required=False)
+edit_organization_args.add_argument("customerType",type=str,help="Customer type of the organization",required=False)
+class EditOrganizationResource(Resource):
 
-#     @jwt_required()
-#     def patch(self):
+    @jwt_required()
+    def patch(self):
+        args=edit_organization_args.parse_args()
+        current_user_email=get_jwt_identity()
+        current_user=UserModel.objects.filter(email=current_user_email).first()
+        if not current_user:
+            return ({"editOrganization":"failed","error": "User not found"}, HTTPStatus.NOT_FOUND)
+        organization_id=fernet.decrypt(args.get('objectId').encode()).decode()
+        organization=OrganizationModel.objects.filter(pk=organization_id).first()
+        if not organization:
+            return ({"editOrganization":"failed","error": "Organization not found"}, HTTPStatus.NOT_FOUND)
+        current_user_organization=OrganizationModel.objects.filter(pk=current_user.organization).first()
+        if not current_user_organization:
+            return ({"editOrganization":"failed","error": "Current user organization not found"}, HTTPStatus.NOT_FOUND)
+        if current_user.organization != organization.assocaiteBy and current_user_organization.customerType != "Owner":
+            return ({"editOrganization":"failed","error": "You are not authorized to edit this organization"}, HTTPStatus.UNAUTHORIZED)
+        if current_user.userRole != "Admin" or current_user.status != "Active":
+            return ({"editOrganization":"failed","error": "Only active admin can edit the organization"}, HTTPStatus.UNAUTHORIZED)
+        # Update organization fields if provided
+        if args.get('name'):
+            organization.name = args.get('name')
+        if args.get('status'):
+            organization.status = args.get('status')
+        if args.get('contactName'):
+            organization.contactName = args.get('contactName')
+        if args.get('phoneNo'):
+            organization.phoneNo = args.get('phoneNo')
+        if args.get('email'):
+            organization.email = args.get('email')
+        if args.get('address'):
+            organization.address = args.get('address')
+        if args.get('city'):
+            organization.city = args.get('city')
+        if args.get('state'):
+            organization.state = args.get('state')
+        if args.get('country'):
+            organization.country = args.get('country')
+        if args.get('customerType'):
+            organization.customerType = args.get('customerType')
+        organization.save()
+        return ({"editOrganization":"success"}, HTTPStatus.OK)
+api.add_resource(EditOrganizationResource, '/edit/')
