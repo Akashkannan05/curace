@@ -68,6 +68,7 @@ class ListOrganizationResource(Resource):
 api.add_resource(ListOrganizationResource,'/')
 
 add_organization_args=reqparse.RequestParser()
+add_organization_args.add_argument("objectId",type=str,help="Enter the ObjectID",required=False)
 add_organization_args.add_argument("organizationName",type=str,help="Enter the organization name",required=True)
 add_organization_args.add_argument("contactName",type=str,help="Enter the contact name",required=True)
 add_organization_args.add_argument("phoneNo",type=str,help="Enter the phone number",required=True)
@@ -96,8 +97,8 @@ class AddOrganizationResource(Resource):
             current_user_email=get_jwt_identity()
             current_user=UserModel.objects.get(email=current_user_email)
             args=add_organization_args.parse_args()
+            objectID=args.get('objectId')
             current_organization=OrganizationModel.objects.filter(pk=current_user.organization).first()
-            
             if current_user is None:
                 return ({"addOrganization":"failed","error":"specify the organization"},HTTPStatus.BAD_REQUEST)
             current_organization=current_organization.customerType
@@ -107,6 +108,14 @@ class AddOrganizationResource(Resource):
             if args.get('customerType')!='End Customer' and current_organization!="Owner":
                 return ({"addOrganization":"failed","error":"Only the owner can add the patner or another owner"},HTTPStatus.BAD_REQUEST)
             organization_count=OrganizationModel.objects.all().count()
+            if objectID :#if objectID is not None
+                organizationqs=OrganizationModel.objects.filter(pk=fernet.decrypt(objectID.encode()).decode()).first()
+                if organizationqs:
+                    assosatied_organization=organizationqs.pk
+                else:
+                    return ({"addOrganization":"failed","error":"There is no organization with this ID you requested"},HTTPStatus.BAD_REQUEST)
+            else:
+                 assosatied_organization=current_user.organization
             organization=OrganizationModel(
                 orgId=organization_count+1,
                 name=args.get("organizationName"),
@@ -119,7 +128,8 @@ class AddOrganizationResource(Resource):
                 state=args.get('state'),
                 country=args.get('country'),
                 customerType=args.get('customerType'),
-                assocaiteBy=current_user.organization
+                assocaiteBy=assosatied_organization,
+                createdBy=current_user.pk
             )
             organization.save()
             print("SAVeEDEDEDED")
@@ -194,7 +204,9 @@ class ActivateOrganizationResource(Resource):
             if change_organization is None:
                 return ({"activateOrganization":"failed","error":"There is no organization with this objectId"},HTTPStatus.NOT_FOUND)
             current_organization=OrganizationModel.objects.filter(pk=current_user.organization).first()
-            if current_user.organization!=change_organization.assocaiteBy or not(current_organization is not None and current_organization.customerType=="Owner"):
+            if current_organization is None:
+                return ({"activateOrganization":"failed","error":"There is no organization for this user organization ID"},HTTPStatus.NOT_FOUND)
+            if current_user.organization!=change_organization.assocaiteBy or current_organization.customerType=="Owner":
                 return ({"activateOrganization":"failed","error":"Only you can change the organization under you or assosiated by you"},HTTPStatus.NOT_FOUND)
             change_organization.status='Active'
             change_organization.save()
@@ -233,7 +245,9 @@ class InactivateOrganizationResource(Resource):
             if change_organization is None:
                 return ({"inactivateOrganization":"failed","error":"There is no organization with this objectId"},HTTPStatus.NOT_FOUND)
             current_organization=OrganizationModel.objects.filter(pk=current_user.organization).first()
-            if current_user.organization!=change_organization.assocaiteBy or not(current_organization is not None and current_organization.customerType=="Owner"):
+            if current_organization is None:
+                return ({"inactivateOrganization":"failed","error":"There is no organization for this user organization ID"},HTTPStatus.NOT_FOUND)
+            if current_user.organization!=change_organization.assocaiteBy or  current_organization.customerType=="Owner":
                 return ({"inactivateOrganization":"failed","error":"Only you can change the organization under you  or assosiated by you"},HTTPStatus.NOT_FOUND)
             change_organization.status='Inactive'
             change_organization.save()
@@ -348,3 +362,10 @@ class DetailOrganizationResource(Resource):
             return ({"organization":"failed","error":f"Something went wrong contact admin team{e}"},HTTPStatus.CONFLICT)
 
 api.add_resource(DetailOrganizationResource,'/detail/')#,methods=["GET", "OPTIONS"]
+
+# edit_organization_args=reqparse.RequestParser()
+# edit_organization_args
+# class EditOrganizationResource(Resource):
+
+#     @jwt_required()
+#     def patch(self):

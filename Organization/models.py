@@ -12,9 +12,10 @@ class OrganizationModel(Document):
     city=StringField(required=True)
     state=StringField(required=True)
     country=StringField(required=True)
-    customerType=StringField(choices=['Owner','Patner','End Customer'],required=True)
+    customerType=StringField(choices=['Owner','Patner','End Customer',"Partner"],required=True)
     createdOn=DateField(default=date.today)
     assocaiteBy=ObjectIdField(required=False,null=True)
+    createdBy=ObjectIdField(required=False,null=True)
 
     def __repr__(self):
         return f"{self.name}-{self.customerType}-{self.status}"
