@@ -242,7 +242,7 @@ class InactivateOrganizationResource(Resource):
         except Exception as e:
             return ({"inactivateOrganization":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
 
-api.add_resource(InactivateOrganizationResource,'/inactivate/')
+api.add_resource(InactivateOrganizationResource,'/inactivate/', methods=['PATCH', 'OPTIONS'])
 
 # detail_organization_args=reqparse.RequestParser()
 # detail_organization_args.add_argument("objectId",type=str,help="Enter the objectid",required=True)
