@@ -26,7 +26,7 @@ api = Api(app)
 # )
 
 # CORS(app, origins="http://localhost:5173", supports_credentials=True)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 jwt = JWTManager(app)
 mail = Mail(app)  

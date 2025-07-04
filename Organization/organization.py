@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint,jsonify,current_app,request
+from flask import Blueprint,jsonify,current_app,request,Flask,make_response
 from flask_restful import Api,Resource,reqparse
 from flask_jwt_extended import  jwt_required, get_jwt_identity
 from flask_mail import Mail, Message
@@ -210,6 +210,12 @@ class InactivateOrganizationResource(Resource):
 
     # def options(self):
     #     return {}, 200
+    def options(self):
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "Authorization, Content-Type")
+        response.headers.add("Access-Control-Allow-Methods", "PATCH, OPTIONS")
+        return response, 200
 
     @jwt_required()
     def patch(self):
