@@ -214,6 +214,7 @@ class ActivateOrganizationResource(Resource):
         except DoesNotExist as e:
             return ({"activateOrganization":"failed","error":"There is no account with this email"},HTTPStatus.NOT_FOUND)
         except Exception as e:
+            print(e)
             return ({"activateOrganization":"failed","error":f"Something went wrong contact admin team {e}"},HTTPStatus.CONFLICT)
 
 api.add_resource(ActivateOrganizationResource,'/activate/')
