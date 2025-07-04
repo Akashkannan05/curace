@@ -150,7 +150,7 @@ class AddOrganizationResource(Resource):
         except DoesNotExist as e:
             return ({"addOrganization":"failed","error":"There is no account with this email"},HTTPStatus.NOT_FOUND)
         except Exception as e:
-            return ({"addOrganization":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
+            return ({"addOrganization":"failed","error":f"Something went wrong contact admin team {e}"},HTTPStatus.CONFLICT)
     
 api.add_resource(AddOrganizationResource,'/add/')
 
@@ -214,7 +214,7 @@ class ActivateOrganizationResource(Resource):
         except DoesNotExist as e:
             return ({"activateOrganization":"failed","error":"There is no account with this email"},HTTPStatus.NOT_FOUND)
         except Exception as e:
-            return ({"activateOrganization":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
+            return ({"activateOrganization":"failed","error":f"Something went wrong contact admin team {e}"},HTTPStatus.CONFLICT)
 
 api.add_resource(ActivateOrganizationResource,'/activate/')
 
@@ -376,6 +376,14 @@ edit_organization_args.add_argument("state",type=str,help="State of the organiza
 edit_organization_args.add_argument("country",type=str,help="Country of the organization",required=False)
 edit_organization_args.add_argument("customerType",type=str,help="Customer type of the organization",required=False)
 class EditOrganizationResource(Resource):
+
+    def options(self):
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+            'Access-Control-Allow-Methods': 'PATCH, OPTIONS'
+        }
+        return {}, 200, headers
 
     @jwt_required()
     def patch(self):
