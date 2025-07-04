@@ -195,7 +195,11 @@ class ActivateOrganizationResource(Resource):
             # if objectId is None:
             #     return ({"status":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
             # args=change_status_organization_args.parse_args()
+            if 'objectId' not in request.args:
+                return ({"activateOrganization":"failed","error":"objectId is not provided"},HTTPStatus.NOT_ACCEPTABLE)
+            print(request.args.get('objectId'))
             objectId=fernet.decrypt(request.args.get('objectId').encode()).decode()
+            # objectId=fernet.decrypt(args.get('objectId').encode()).decode()
             current_user_email=get_jwt_identity()
             current_user=UserModel.objects.get(email=current_user_email)
             print(current_user.userRole)
