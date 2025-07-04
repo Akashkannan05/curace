@@ -24,7 +24,9 @@ api = Api(app)
 #     resources=app.config.get("CORS_RESOURCES", {}),
 #     supports_credentials=app.config.get("CORS_SUPPORTS_CREDENTIALS", False)
 # )
-CORS(app, origins="http://localhost:5173", supports_credentials=True)
+
+# CORS(app, origins="http://localhost:5173", supports_credentials=True)
+CORS(app)
 
 jwt = JWTManager(app)
 mail = Mail(app)  
