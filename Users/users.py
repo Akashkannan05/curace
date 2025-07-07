@@ -61,7 +61,7 @@ class UserLoginResourse(Resource):
             else:
                 userRole=user.userRole
                 # return ({"login":"success","accessToken":access_token,"customerType":"Not filled yet"},HTTPStatus.OK)
-            return ({"login":"success","accessToken":access_token,"customerType":customerType,"userRole":userRole},HTTPStatus.OK)
+            return ({"login":"success","accessToken":access_token,"customerType":customerType,"userRole":userRole,"userId":fernet.encrypt(str(user.pk).encode()).decode()},HTTPStatus.OK)
         except DoesNotExist as e:
             #raise UserDoesnotExisits("A user with this email does not  exists.")
             return ({"login":"failed","error":"There is no account with this email"},HTTPStatus.NOT_FOUND)
