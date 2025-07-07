@@ -149,7 +149,7 @@ api.add_resource(AddUserResourse,'/add/')
 #b'gAAAAABoSmL2QQ2N_uROUbIS7aDZHnC_H7BdSul08FzifjvAael23TYcOgUpKQFBF73KTLdx-CpZV2TvKnAKH_R5ZgJlm6FmX6uhFkdsHIuTGuj8dbmgABU='
 
 password_args=reqparse.RequestParser()
-password_args.add_argument("encryption",type=str,help="Encrypted value is required",required=True)
+# password_args.add_argument("encryption",type=str,help="Encrypted value is required",required=True)
 password_args.add_argument("password",type=str,help="password is required",required=True)
 password_args.add_argument("confirmPassword",type=str,help="conform password is required",required=True)
 class setPasswordResource(Resource):
