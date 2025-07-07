@@ -378,7 +378,7 @@ api.add_resource(DetailOrganizationResource,'/detail/')#,methods=["GET", "OPTION
 edit_organization_args=reqparse.RequestParser()
 edit_organization_args.add_argument("objectId",type=str,help="ID of the organization",required=True)
 edit_organization_args.add_argument("name",type=str,help="Name of the organization",required=False)
-edit_organization_args.add_argument("status",type=str,help="Status of the organization",required=False)
+# edit_organization_args.add_argument("status",type=str,help="Status of the organization",required=False)
 edit_organization_args.add_argument("contactName",type=str,help="Contact name of the organization",required=False)
 edit_organization_args.add_argument("phoneNo",type=str,help="Phone number of the organization",required=False)
 edit_organization_args.add_argument("email",type=str,help="Email of the organization",required=False)
@@ -416,10 +416,10 @@ class EditOrganizationResource(Resource):
         if current_user.userRole != "Admin" or current_user.status != "Active":
             return ({"editOrganization":"failed","error": "Only active admin can edit the organization"}, HTTPStatus.UNAUTHORIZED)
         # Update organization fields if provided
-        if args.get('name'):
-            organization.name = args.get('name')
-        if args.get('status'):
-            organization.status = args.get('status')
+        if args.get('organizationName'):
+            organization.name = args.get('organizationName')
+        # if args.get('status'):
+        #     organization.status = args.get('status')
         if args.get('contactName'):
             organization.contactName = args.get('contactName')
         if args.get('phoneNo'):
