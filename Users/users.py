@@ -82,7 +82,8 @@ api.add_resource(UserLoginResourse,'/login/')
 
 
 add_user_args=reqparse.RequestParser()
-#add_user_args.add_argument('accessToken',type=str,help="Please provide the access token",required=True)
+#add_user_args.add_argument('accessToken',type=str,help="Please provide the access token",required=True)\
+add_user_args.add_argument('objectId',type=str,help="please provide the objectID",required=False)
 add_user_args.add_argument('username',type=str,help="please provide the username",required=True)
 add_user_args.add_argument('email',type=str,help="Please provide the email",required=True)
 add_user_args.add_argument('userRole',type=str,help="Please provide the user role",required=True)
@@ -95,6 +96,8 @@ class AddUserResourse(Resource):
             mail = current_app.mail
             print("STRAT_____________")
             args=add_user_args.parse_args()
+            
+            
             current_user_email=get_jwt_identity()
             user=UserModel.objects.filter(email=current_user_email).first()
             if not user:
@@ -103,12 +106,24 @@ class AddUserResourse(Resource):
                 return ({"user":"failed","error":"Only Admin user can add another user"},HTTPStatus.NOT_ACCEPTABLE)
             if user.status!="Active":
                 return ({"user":"failed","error":"Only acitive admin can add another user"},HTTPStatus.UNAUTHORIZED)
+            objectId=args.get('objectId')
+            if objectId is not None:
+                objectId=fernet.decrypt(objectId.encode()).decode()
+                assosiatedBY=UserModel.objects.filter(pk=objectId).first()
+                if assosiatedBY is None:
+                    return ({"user":"failed","error":"There is no user with this objectId"},HTTPStatus.NOT_FOUND)
+                if assosiatedBY.status=='Pending':
+                    return ({"user":"failed","error":"Can not add the user until he set the password"},HTTPStatus.BAD_REQUEST)
+            else:
+                assosiatedBY=user
             new_user=UserModel(
                 username=args.get('username'),
                 email=args.get('email'),
                 userRole=args.get('userRole'),
                 organization=user.organization,
-                assocaiteBy=user,
+                assocaiteBy=assosiatedBY,
+                createdBy=user,
+                password=None,  # Password will be set later
                 status='Pending'
                 )
             new_user.save()

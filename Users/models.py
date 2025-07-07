@@ -22,6 +22,7 @@ class UserModel(Document):
     userRole=StringField(choices=["Admin","Engineer", "Executive"])
     organization=ObjectIdField(required=False,null=True)
     assocaiteBy=ReferenceField('self',required=False,null=True)
+    createdBy=ReferenceField('self',required=False,null=True)
     status=StringField(choices=['Pending','Active','Inactive'],default='Pending')
     createdOn=DateField(default=date.today)
     organizationColumns=ListField(default=['status','contactName','phoneNo','email','address','city','state','country','customerType'])
