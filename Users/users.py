@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint,jsonify,current_app
+from flask import Blueprint,jsonify,current_app,request
 from flask_restful import Api,Resource,reqparse
 from flask_jwt_extended import  create_access_token,jwt_required, get_jwt_identity
 from flask_mail import Mail, Message
@@ -155,7 +155,7 @@ password_args.add_argument("confirmPassword",type=str,help="conform password is 
 class setPasswordResource(Resource):
 
     def patch(self):
-        encryption=args.get('encryption')
+        encryption=request.args.get('encryption')
         if encryption is None:
             return ({"password":"failed","error":"The encryption is not provided"},HTTPStatus.BAD_REQUEST)
         args=password_args.parse_args()
