@@ -53,8 +53,15 @@ class UserLoginResourse(Resource):
             organization=OrganizationModel.objects.filter(pk=user.organization).first()
             access_token=create_access_token(identity=args.get('email'))
             if organization is None:
-                return ({"login":"success","accessToken":access_token,"customerType":"Not filled yet"},HTTPStatus.OK)
-            return ({"login":"success","accessToken":access_token,"customerType":organization.customerType},HTTPStatus.OK)
+                customerType="Not filled yet"
+            else:
+                customerType=organization.customerType
+            if user.userRole is None:
+                userRole="Not filled yet"
+            else:
+                userRole=user.userRole
+                # return ({"login":"success","accessToken":access_token,"customerType":"Not filled yet"},HTTPStatus.OK)
+            return ({"login":"success","accessToken":access_token,"customerType":customerType,"userRole":userRole},HTTPStatus.OK)
         except DoesNotExist as e:
             #raise UserDoesnotExisits("A user with this email does not  exists.")
             return ({"login":"failed","error":"There is no account with this email"},HTTPStatus.NOT_FOUND)
@@ -106,7 +113,7 @@ class AddUserResourse(Resource):
                 )
             new_user.save()
             frontend_url="http://localhost:5173/set-password/"
-            encrypted_email=fernet.encrypt(args.get('email').encode())
+            encrypted_email=fernet.encrypt(args.get('email').encode()).decode()
             body=f"This email is to inform the request of the adding user with this email use this link to set password and Active the account {frontend_url}{encrypted_email}"
             msg=Message(
                 subject="Invitation for user",
@@ -127,18 +134,19 @@ api.add_resource(AddUserResourse,'/add/')
 #b'gAAAAABoSmL2QQ2N_uROUbIS7aDZHnC_H7BdSul08FzifjvAael23TYcOgUpKQFBF73KTLdx-CpZV2TvKnAKH_R5ZgJlm6FmX6uhFkdsHIuTGuj8dbmgABU='
 
 password_args=reqparse.RequestParser()
-# password_args.add_argument("encryption",type=str,help="Encrypted value is required",required=True)
+password_args.add_argument("encryption",type=str,help="Encrypted value is required",required=True)
 password_args.add_argument("password",type=str,help="password is required",required=True)
-password_args.add_argument("conformPassword",type=str,help="conform password is required",required=True)
+password_args.add_argument("confirmPassword",type=str,help="conform password is required",required=True)
 class setPasswordResource(Resource):
 
-    def patch(self,encryption):
+    def patch(self):
+        encryption=args.get('encryption')
         if encryption is None:
             return ({"password":"failed","error":"The encryption is not provided"},HTTPStatus.BAD_REQUEST)
         args=password_args.parse_args()
         if args.get('password').strip()=="":
             return ({"password":"failed","error":"password can not be an empty space"},HTTPStatus.BAD_REQUEST)
-        if args.get('password')!=args.get('conformPassword'):
+        if args.get('password')!=args.get('confirmPassword'):
             return ({"password":"failed","error":"password should match the conform password"},HTTPStatus.BAD_REQUEST)
         email=fernet.decrypt(encryption.encode()).decode()
         try:
@@ -156,7 +164,7 @@ class setPasswordResource(Resource):
         except Exception as e:
             return ({"password":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
 
-api.add_resource(setPasswordResource,'/password/<string:encryption>/')
+api.add_resource(setPasswordResource,'/set-password/')
 
 class  ListUserResource(Resource):
 
