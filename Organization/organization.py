@@ -377,7 +377,7 @@ api.add_resource(DetailOrganizationResource,'/detail/')#,methods=["GET", "OPTION
 
 edit_organization_args=reqparse.RequestParser()
 edit_organization_args.add_argument("objectId",type=str,help="ID of the organization",required=True)
-edit_organization_args.add_argument("name",type=str,help="Name of the organization",required=False)
+edit_organization_args.add_argument("organizationName",type=str,help="Name of the organization",required=False)
 # edit_organization_args.add_argument("status",type=str,help="Status of the organization",required=False)
 edit_organization_args.add_argument("contactName",type=str,help="Contact name of the organization",required=False)
 edit_organization_args.add_argument("phoneNo",type=str,help="Phone number of the organization",required=False)
