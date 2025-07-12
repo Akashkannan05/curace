@@ -1,0 +1,21 @@
+use DataBase
+
+
+db.createCollection("device_record", {
+  timeseries: {
+    timeField: "timestamp",
+    metaField: "topic",
+    granularity: "seconds"
+  },
+  storageEngine: {
+    wiredTiger: {
+      configString: "block_compressor=zstd"
+    }
+  }
+})
+
+
+db.sensor_readings.createIndex(
+  { timestamp: 1 },
+  { expireAfterSeconds: 604800 } // 7 days
+)
