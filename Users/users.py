@@ -34,6 +34,11 @@ def removeTimeFromDate(date):
     List=str(date.split(" "))
     return List[0]+List[1]+List[2]+List[3]
 
+class HelloWorld(Resource):
+    def get(self):
+        return ({"msg":"Hello WORLD"})
+
+api.add_resource(HelloWorld,"/hello/")
 user_login_args=reqparse.RequestParser()
 user_login_args.add_argument("email",type=str,help="email required!Please enter the email",required=True)
 user_login_args.add_argument("password",type=str,help="password required! Please enter the password",required=True)
