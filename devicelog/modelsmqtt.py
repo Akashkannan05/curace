@@ -1,7 +1,15 @@
 from mongoengine import *
 from datetime import datetime
+from dotenv import load_dotenv
 
-connect('DataBase')
+load_dotenv()
+connect(db='ozopool_iot',
+        host="62.72.13.179",
+        port=27017,
+        username="ozopool_iot",
+        password="Faraday@2023",
+        authentication_source= "ozopool_iot"
+)
 
 class DeviceRecord(Document):
     # deviceId=StringField(unique=True,required=True)
