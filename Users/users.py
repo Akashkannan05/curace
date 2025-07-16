@@ -91,7 +91,7 @@ api.add_resource(UserLoginResourse,'/login/')
 
 add_user_args=reqparse.RequestParser()
 #add_user_args.add_argument('accessToken',type=str,help="Please provide the access token",required=True)\
-add_user_args.add_argument('objectId',type=str,help="please provide the objectID",required=False)
+# add_user_args.add_argument('objectId',type=str,help="please provide the objectID",required=False)
 add_user_args.add_argument('username',type=str,help="please provide the username",required=True)
 add_user_args.add_argument('email',type=str,help="Please provide the email",required=True)
 add_user_args.add_argument('userRole',type=str,help="Please provide the user role",required=True)
@@ -114,16 +114,16 @@ class AddUserResourse(Resource):
                 return ({"user":"failed","error":"Only Admin user can add another user"},HTTPStatus.NOT_ACCEPTABLE)
             if user.status!="Active":
                 return ({"user":"failed","error":"Only acitive admin can add another user"},HTTPStatus.UNAUTHORIZED)
-            objectId=args.get('objectId')
-            if objectId is not None:
-                objectId=fernet.decrypt(objectId.encode()).decode()
-                assosiatedBY=UserModel.objects.filter(pk=objectId).first()
-                if assosiatedBY is None:
-                    return ({"user":"failed","error":"There is no user with this objectId"},HTTPStatus.NOT_FOUND)
-                if assosiatedBY.status=='Pending':
-                    return ({"user":"failed","error":"Can not add the user until he set the password"},HTTPStatus.BAD_REQUEST)
-            else:
-                assosiatedBY=user
+            # objectId=args.get('objectId')
+            # if objectId is not None:
+            #     objectId=fernet.decrypt(objectId.encode()).decode()
+            #     assosiatedBY=UserModel.objects.filter(pk=objectId).first()
+            #     if assosiatedBY is None:
+            #         return ({"user":"failed","error":"There is no user with this objectId"},HTTPStatus.NOT_FOUND)
+            #     if assosiatedBY.status=='Pending':
+            #         return ({"user":"failed","error":"Can not add the user until he set the password"},HTTPStatus.BAD_REQUEST)
+            # else:
+            assosiatedBY=user
             new_user=UserModel(
                 username=args.get('username'),
                 email=args.get('email'),
@@ -153,6 +153,65 @@ class AddUserResourse(Resource):
             return ({"user":"failed",f"error":"Something went wrong contact admin team{e}"},HTTPStatus.CONFLICT)
 
 api.add_resource(AddUserResourse,'/add/')
+
+add_user_object_args=reqparse.RequestParser()
+#add_user_args.add_argument('accessToken',type=str,help="Please provide the access token",required=True)\
+add_user_object_args.add_argument('objectId',type=str,help="please provide the objectID",required=True)
+add_user_object_args.add_argument('username',type=str,help="please provide the username",required=True)
+add_user_object_args.add_argument('email',type=str,help="Please provide the email",required=True)
+add_user_object_args.add_argument('userRole',type=str,help="Please provide the user role",required=True)
+class AddUserResourceThroughObjectId(Resource):
+
+    @jwt_required()
+    def post(self):
+        try:
+            mail = current_app.mail
+            print("STRAT_____________")
+            args=add_user_args.parse_args()
+    
+            current_user_email=get_jwt_identity()
+            user=UserModel.objects.filter(email=current_user_email).first()
+            if not user:
+                return ({"user":"failed","error":f"Can't find the user with provided email {current_user_email}"},HTTPStatus.NOT_FOUND)
+            if user.userRole!="Admin":
+                return ({"user":"failed","error":"Only Admin user can add another user"},HTTPStatus.NOT_ACCEPTABLE)
+            if user.status!="Active":
+                return ({"user":"failed","error":"Only acitive admin can add another user"},HTTPStatus.UNAUTHORIZED)
+            objectId=args.get('objectId')
+            objectId=fernet.decrypt(objectId.encode()).decode()
+            assosiatedBY=UserModel.objects.filter(pk=objectId).first()
+            if assosiatedBY is None:
+                return ({"user":"failed","error":"There is no user with this objectId"},HTTPStatus.NOT_FOUND)
+            if assosiatedBY.status=='Pending':
+                return ({"user":"failed","error":"Can not add the user until he set the password"},HTTPStatus.BAD_REQUEST)
+            
+            new_user=UserModel(
+                username=args.get('username'),
+                email=args.get('email'),
+                userRole=args.get('userRole'),
+                organization=objectId,
+                assocaiteBy=assosiatedBY,
+                createdBy=user,
+                password=None,  # Password will be set later
+                status='Pending'
+                )
+            new_user.save()
+            frontend_url="http://localhost:5173/#/set-password/"
+            encrypted_email=fernet.encrypt(args.get('email').encode()).decode()
+            body=f"This email is to inform the request of the adding user with this email use this link to set password and Active the account {frontend_url}{encrypted_email}"
+            msg=Message(
+                subject="Invitation for user",
+                recipients=[args.get('email')],
+                body=body
+            )            
+            msg.html=f"""
+                <h1>Use this link {frontend_url}{encrypted_email}</h1>
+            """
+            mail.send(msg)
+            print("_____________>",encrypted_email)
+            return ({"user":"success","msg":"user was added successfully"})
+        except Exception as e:
+            return ({"user":"failed",f"error":"Something went wrong contact admin team{e}"},HTTPStatus.CONFLICT)
 
 #b'gAAAAABoSmL2QQ2N_uROUbIS7aDZHnC_H7BdSul08FzifjvAael23TYcOgUpKQFBF73KTLdx-CpZV2TvKnAKH_R5ZgJlm6FmX6uhFkdsHIuTGuj8dbmgABU='
 
