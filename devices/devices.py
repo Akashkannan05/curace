@@ -254,7 +254,7 @@ class GetDeviceData(Resource):
         output = {}  # this will be updated from the MQTT callback
         message_received = threading.Event() 
 
-        def on_connect(client, userdata, flags, rc):
+        def on_connect(client, userdata, flags, rc, properties=None):
             print(f"Connected to MQTT broker with code {rc}")
             client.subscribe(topic)
 
