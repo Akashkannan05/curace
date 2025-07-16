@@ -167,7 +167,7 @@ class AddUserResourceThroughObjectId(Resource):
         try:
             mail = current_app.mail
             print("STRAT_____________")
-            args=add_user_args.parse_args()
+            args=add_user_object_args.parse_args()
     
             current_user_email=get_jwt_identity()
             user=UserModel.objects.filter(email=current_user_email).first()
@@ -177,8 +177,8 @@ class AddUserResourceThroughObjectId(Resource):
                 return ({"user":"failed","error":"Only Admin user can add another user"},HTTPStatus.NOT_ACCEPTABLE)
             if user.status!="Active":
                 return ({"user":"failed","error":"Only acitive admin can add another user"},HTTPStatus.UNAUTHORIZED)
-            objectId=args.get('objectId')
-            objectId=fernet.decrypt(objectId.encode()).decode()
+            
+            objectId=fernet.decrypt(args.get('objectId').encode()).decode()
             assosiatedBY=UserModel.objects.filter(pk=objectId).first()
             if assosiatedBY is None:
                 return ({"user":"failed","error":"There is no user with this objectId"},HTTPStatus.NOT_FOUND)
