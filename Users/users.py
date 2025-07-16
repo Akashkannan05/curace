@@ -213,6 +213,7 @@ class AddUserResourceThroughObjectId(Resource):
         except Exception as e:
             return ({"user":"failed",f"error":"Something went wrong contact admin team{e}"},HTTPStatus.CONFLICT)
 
+api.add_resource(AddUserResourceThroughObjectId,'/add/objectId/')
 #b'gAAAAABoSmL2QQ2N_uROUbIS7aDZHnC_H7BdSul08FzifjvAael23TYcOgUpKQFBF73KTLdx-CpZV2TvKnAKH_R5ZgJlm6FmX6uhFkdsHIuTGuj8dbmgABU='
 
 password_args=reqparse.RequestParser()
