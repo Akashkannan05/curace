@@ -10,6 +10,7 @@ from flask_mail import Mail, Message
 from config import DevlopmentConfig, ProductionConfig,Config
 from Users.users import user_bp
 from Organization.organization import organization_bp
+from devices.devices import device_bp
 
 load_dotenv()  
 
@@ -36,6 +37,9 @@ app.mail=mail
 
 app.register_blueprint(user_bp, url_prefix="/users")
 app.register_blueprint(organization_bp,url_prefix="/organization")
+app.register_blueprint(device_bp,urlPprefix="/devices")
+
+
 
 if __name__ == "__main__":
     app.run(debug=True,host="0.0.0.0")
