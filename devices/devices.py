@@ -33,7 +33,7 @@ class AddDevice(Resource):
             organizationId=fernet.decrypt(args.get('organizationId').encode()).decode()
         else:
             organizationId=user.organization
-            
+
         if user is None:
             return ({"addDevice":"Failed","error":"User not found with this email"},HTTPStatus.NOT_FOUND)
         if user.userRole!="Admin" or user.status!="Active":
@@ -87,7 +87,7 @@ class ListDevice(Resource):
             # "objectId":objectId,
             dictionary={
                 "deviceId":i.deviceId,
-                "customerName":i.customerName,
+                "customer":i.customerName,
                 "city":i.city,
                 "state":i.state,
                 "poolStatus":i.poolStatus,
@@ -130,8 +130,6 @@ class EditDevice(Resource):
 
 
 api.add_resource(EditDevice,'/edit/')
-
-
 
 
 del_args_device=reqparse.RequestParser()
