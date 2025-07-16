@@ -4,6 +4,7 @@ from flask_jwt_extended import  jwt_required, get_jwt_identity
 from http import HTTPStatus
 from cryptography.fernet import Fernet
 from datetime import datetime
+from werkzeug.security import check_password_hash
 
 import os
 from .models import DeviceModel
@@ -559,3 +560,21 @@ class GetDeviceData(Resource):
 
 # Register API endpoint
 api.add_resource(GetDeviceData, '/detail/')
+
+pass_check_args=reqparse.RequestParser()
+pass_check_args.add_argument("password",type=str,help="password",required=True)
+
+class CheckPassword(Resource):
+    @jwt_required()
+    def post(self):
+        args=pass_check_args.parse_args()
+        currentUserEmail=get_jwt_identity()
+        user=UserModel.objects.filter(email=currentUserEmail).first()
+        if user is None:
+            return ({"checkPassword":"Failed","error":"User not found"},HTTPStatus.NOT_FOUND)
+        
+        if check_password_hash(user.password,args.get("password")):
+            return ({"checkPassword":"Success"},HTTPStatus.OK)
+        else:
+            return ({"checkPassword":"Failed","error":"Incorrect password"},HTTPStatus.UNAUTHORIZED)
+api.add_resource(CheckPassword,"/checkPassword/")
