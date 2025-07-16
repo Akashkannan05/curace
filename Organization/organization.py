@@ -13,6 +13,7 @@ from http import HTTPStatus
 
 from .models import OrganizationModel
 from Users.models import UserModel
+from devices.models import DeviceModel
 
 organization_bp=Blueprint("organization",__name__)
 api=Api(organization_bp)
@@ -30,10 +31,10 @@ class ListOrganizationResource(Resource):
             organization=OrganizationModel.objects.filter(pk=organization_id).first()
             if organization is None:
                return ({"Organization":"failed","error":"please fill the organozation for user"},HTTPStatus.BAD_REQUEST) 
-            if organization.customerType=="Owner":
-                organization_list=OrganizationModel.objects.all()
-            else:
-                organization_list=OrganizationModel.objects.filter(assocaiteBy=organization.pk)
+            # if organization.customerType=="Owner":
+            #     organization_list=OrganizationModel.objects.all()
+            # else:
+            organization_list=OrganizationModel.objects.filter(assocaiteBy=organization.pk)
             List=[]
             columns=current_user.organizationColumns
             for i in organization_list:
@@ -338,6 +339,19 @@ class DetailOrganizationResource(Resource):
                     user_list.append(dictionary)
             #Still devices in need to be done
             print(user_list)
+            device_list=[]
+            device=DeviceModel.objects.filter(organization=organization.pk)
+            if device is not None:
+                for i in device:
+                    dictionary={
+                        "id": i.deviceId,
+                        "customer": i.customerName,
+                        "city": i.city,
+                        "state": i.state,
+                        "poolStatus": "Excellent",
+                        "createdOn": str(i.createdOn)
+                    }
+                    device_list.append(dictionary)
             return ({"organization":{
                         "id": "ORG001",
                         "organizationName":organization.name,
@@ -356,14 +370,7 @@ class DetailOrganizationResource(Resource):
                             "activeDevices": 120,
                             "needAttention": 15
                             },
-                        "devices": [{
-                            "id": "DEV001",
-                            "customer": "Acme Corporation",
-                            "city": "Anytown",
-                            "state": "CA",
-                            "poolStatus": "Excellent",
-                            "createdOn": "2023-01-15"
-                            }],
+                        "devices": device_list,
                         "organizations":organization_list,
                         "users":user_list
             }})

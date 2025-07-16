@@ -91,7 +91,7 @@ class ListDevice(Resource):
                 "city":i.city,
                 "state":i.state,
                 "poolStatus":i.poolStatus,
-                "createdOn":i.createdOn
+                "createdOn":str(i.createdOn)
             }
             output.append(dictionary)
 
