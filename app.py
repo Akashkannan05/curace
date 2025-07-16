@@ -37,7 +37,7 @@ app.mail=mail
 
 app.register_blueprint(user_bp, url_prefix="/users")
 app.register_blueprint(organization_bp,url_prefix="/organization")
-app.register_blueprint(device_bp,urlPprefix="/devices")
+app.register_blueprint(device_bp,url_prefix="/devices")
 
 
 
