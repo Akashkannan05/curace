@@ -10,6 +10,11 @@ from .models import DeviceModel
 from Users.models import UserModel
 from Organization.models import OrganizationModel
 from dotenv import load_dotenv
+import json
+
+import paho.mqtt.client as mqtt
+import threading
+
 
 device_bp=Blueprint("device",__name__)
 api=Api(device_bp)
@@ -236,3 +241,108 @@ class DeviceMqttSetting(Resource):
         return ({"editSetting":"Success"},HTTPStatus.OK)
 
 api.add_resource(DeviceMqttSetting,"/devicemqttconfig/")
+
+device_detail_args=reqparse.RequestParser()
+device_detail_args.add_argument("deviceId",type="str",help="DEVICEID",required=True)
+
+class GetDeviceData(Resource):
+    MQTT_BROKER = "broker.hivemq.com"  # Use your own broker for production
+    MQTT_PORT = 1883
+
+    def get_data_from_device(self,topic, timeout=5):
+        # topic = f"device/{user_id}/data"
+        output = {}  # this will be updated from the MQTT callback
+        message_received = threading.Event() 
+
+        def on_connect(client, userdata, flags, rc):
+            print(f"Connected to MQTT broker with code {rc}")
+            client.subscribe(topic)
+
+        def on_message(client, userdata, msg):
+            nonlocal output
+            try:
+                data = json.loads(msg.payload.decode())
+            except json.JSONDecodeError as e:
+                print("Invalid JSON received:", e)
+                return
+            except UnicodeDecodeError as e:
+                print("Payload could not be decoded:", e)
+                return
+            #print(data)
+            list=data["input1"]
+            for i in list:
+                if i.get("name")=="Data_1":
+                    output['ph'] = i.get("data")[0]
+                    output['temperature'] = i.get("data")[1]
+                if i.get("name")=="Data_2":
+                    output['orp'] = i.get("data")[0]
+                    output['ozoneLevel'] = i.get("data")[2]
+                if i.get("name")=="Data_3":
+                    if i.get("data")[25]==0:
+                        output['power']= False
+                    else:
+                        output['power']= True
+            # for i in list:
+            # nonlocal received_message
+            # received_message = msg.payload.decode()
+            # print(f" Received from topic '{msg.topic}': {received_message}")
+            message_received.set()  
+            client.disconnect()  # Exit loop_forever() and end thread
+
+        client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
+        client.on_connect = on_connect
+        client.on_message = on_message
+        client.connect(self.MQTT_BROKER, self.MQTT_PORT, 60)
+
+        # Start MQTT loop in a separate thread
+        mqtt_thread = threading.Thread(target=client.loop_forever)
+        mqtt_thread.start()
+
+        # Wait for message or timeout
+        # mqtt_thread.join(timeout=timeout)
+        # client.disconnect()  # Just in case timeout happens before disconnect in on_message
+        message_received.wait(timeout=timeout)
+        try:
+            client.disconnect()
+        except:
+            pass
+        mqtt_thread.join(timeout=1)
+
+        return output if output else None
+
+    def get(self):
+        args=device_detail_args.parse_args()
+        device = DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
+        if device is None:
+            return {
+                "status": "failed",
+                "message": "Device not found"
+            }, 404
+        topic = device.mqttTopic
+        if not topic:
+            return {
+                "status": "failed",
+                "message": "Device MQTT topic not configured"
+            }, 400
+        data = self.get_data_from_device(topic, timeout=5)
+        if data:
+            data['minimumPh'] = device.minimumPh
+            data['maximumPh'] = device.maximumPh
+            data['minimumORP'] = device.minimumORP
+            data['maximumORP'] = device.maximumORP
+            data['minimumTemperature'] = device.minimumTemperature
+            data['maximumTemperature'] = device.maximumTemperature
+            return {
+                "status": "success",
+                "user_id": topic,
+                "data": data
+            }, 200
+        else:
+            return {
+                "status": "timeout",
+                "user_id": topic,
+                "message": f"No data received from device in time for user {topic}"
+            }, 504
+
+# Register API endpoint
+api.add_resource(GetDeviceData, '/detail/')
