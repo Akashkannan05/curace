@@ -89,8 +89,8 @@ class AddDevice(Resource):
             poolStatus="Excellent",
             organization=organizationqs.pk,
             createdBy=user.pk,
-            mqttTopicRead=args.get("mqttTopicRead"),
-            mqttTopicWrite=args.get("mqttTopicWrite"),
+            readingMqttTopic=args.get("mqttTopicRead"),
+            sendingMqttTopic=args.get("mqttTopicWrite"),
 
         )
 
