@@ -284,8 +284,8 @@ api.add_resource(DeviceValueSetting,"/deviceValueConfig/")
 
 device_mqtt_config=reqparse.RequestParser()
 device_mqtt_config.add_argument("deviceId",type=str,help="deviceId is required",required=True)
-device_mqtt_config.add_argument("readingMqttTopic",type=str,help="readingMqttTopic is required",required=True)
-device_mqtt_config.add_argument("sendingMqttTopic",type=str,help="sendingMqttTopic is required",required=True)
+device_mqtt_config.add_argument("mqttTopicRead",type=str,help="readingMqttTopic is required",required=True)
+device_mqtt_config.add_argument("mqttTopicWrite",type=str,help="sendingMqttTopic is required",required=True)
 # device_mqtt_config.add_argument("mqttTopic",type=str,help="mqttTopic is required",required=True)
 
 class DeviceMqttSetting(Resource):
@@ -295,10 +295,10 @@ class DeviceMqttSetting(Resource):
         if device is None:
             return ({"editSetting":"Failed","error":"Device is not found"},HTTPStatus.NOT_FOUND)
         
-        if args.get("readingMqttTopic") is not None:
-            device.readingMqttTopic=args.get("readingMqttTopic")
-        if args.get("sendingMqttTopic") is not None:
-            device.sendingMqttTopic=args.get("sendingMqttTopic")
+        if args.get("mqttTopicRead") is not None:
+            device.readingMqttTopic=args.get("mqttTopicRead")
+        if args.get("mqttTopicWrite") is not None:
+            device.sendingMqttTopic=args.get("mqttTopicWrite")
         # if args.get("mqttTopic") is not None:
         #     device.mqttTopic=args.get("mqttTopic")
         
@@ -529,7 +529,7 @@ class GetDeviceData(Resource):
                 "status": "failed",
                 "message": "Device not found"
             }, 404
-        topic = device.mqttTopic
+        topic = device.readingMqttTopic
         if not topic:
             return {
                 "status": "failed",
