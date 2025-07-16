@@ -82,6 +82,10 @@ class AddDevice(Resource):
         if organizationqs is None:
             return ({"addDevice":"Failed","error":"Organization not found"},HTTPStatus.NOT_FOUND)
         
+        device_check=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
+        if device_check is not None:
+            return ({"addDevice":"Failed","error":"Device with this ID already exists"},HTTPStatus.CONFLICT)
+        
         device=DeviceModel(
             deviceId=args.get("deviceId"),
             customerName=organizationqs.name,
