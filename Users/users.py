@@ -179,11 +179,11 @@ class AddUserResourceThroughObjectId(Resource):
                 return ({"user":"failed","error":"Only acitive admin can add another user"},HTTPStatus.UNAUTHORIZED)
             
             objectId=fernet.decrypt(args.get('objectId').encode()).decode()
-            assosiatedBY=UserModel.objects.filter(pk=objectId).first()
-            if assosiatedBY is None:
-                return ({"user":"failed","error":"There is no user with this objectId"},HTTPStatus.NOT_FOUND)
-            if assosiatedBY.status=='Pending':
-                return ({"user":"failed","error":"Can not add the user until he set the password"},HTTPStatus.BAD_REQUEST)
+            assosiatedBY=user
+            # if assosiatedBY is None:
+            #     return ({"user":"failed","error":"There is no user with this objectId"},HTTPStatus.NOT_FOUND)
+            # if assosiatedBY.status=='Pending':
+            #     return ({"user":"failed","error":"Can not add the user until he set the password"},HTTPStatus.BAD_REQUEST)
             
             new_user=UserModel(
                 username=args.get('username'),
