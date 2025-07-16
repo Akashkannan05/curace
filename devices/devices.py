@@ -252,7 +252,7 @@ class DeviceValueSetting(Resource):
         if device is None:
             return ({"editSetting":"Failed","error":"Device is not found"},HTTPStatus.NOT_FOUND)
         
-        if args.get("minimumPh") is not None and args.get("maximumPh") is not None and (args.get("minimumPh")<args.get("maximumPh")):
+        if args.get("minimumPh") is not None and args.get("maximumPh") is not None and (float(args.get("minimumPh"))<float(args.get("maximumPh"))):
             device.minimumPh=float(args.get("minimumPh"))
             device.maximumPh=float(args.get("maximumPh")
 )
@@ -260,7 +260,7 @@ class DeviceValueSetting(Resource):
             return ({"editSetting":"failed","error":"minimum pH value should be less than maximum pH"},HTTPStatus.BAD_REQUEST)
        
 
-        if args.get("minimumORP") is not None and args.get("maximumORP") is not None and (args.get("minimumORP") < args.get("maximumORP")):
+        if args.get("minimumORP") is not None and args.get("maximumORP") is not None and (int(args.get("minimumORP")) < int(args.get("maximumORP"))):
             device.minimumORP=int(args.get("minimumORP"))
             device.maximumORP=int(args.get("maximumORP"))
 
@@ -268,7 +268,7 @@ class DeviceValueSetting(Resource):
             return ({"editSetting":"failed","error":"minimum ORP value should be less than maximum ORP"},HTTPStatus.BAD_REQUEST)
            
 
-        if args.get("minimumTemperature") is not None and args.get("maximumTemperature") is not None and (args.get("minimumTemperature") < args.get("maximumTemperature")):
+        if args.get("minimumTemperature") is not None and args.get("maximumTemperature") is not None and ((int(args.get("minimumTemperature")) < int(args.get("maximumTemperature")))):
             device.minimumTemperature=int(args.get("minimumTemperature"))
             device.maximumTemperature=int(args.get("maximumTemperature"))
 
