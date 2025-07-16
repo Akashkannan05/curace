@@ -29,8 +29,8 @@ class DeviceModel(Document):
     minimumTemperature=IntField(default=26)
     maximumTemperature=IntField(default=32)
     
-    readingMqttTopic=StringField()
-    sendingMqttTopic=StringField()
+    mqttTopicRead=StringField()
+    mqttTopicWrite=StringField()
     mqttTopicOriginalRead=StringField()
     mqttTopicOriginalWrite=StringField()
 
