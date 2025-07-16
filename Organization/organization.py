@@ -345,15 +345,15 @@ class DetailOrganizationResource(Resource):
             device=DeviceModel.objects.filter(organization=organization.pk)
             if device is not None:
                 for i in device:
-                    dt = datetime.strptime(str(i.createdOn), "%a, %d %b %Y %H:%M:%S %Z")
-                    formatted_date = dt.strftime("%Y-%m-%d")
+                    # dt = datetime.strptime(str(i.createdOn), "%a, %d %b %Y %H:%M:%S %Z")
+                    # formatted_date = dt.strftime("%Y-%m-%d")
                     dictionary={
                         "id": i.deviceId,
                         "customer": i.customerName,
                         "city": i.city,
                         "state": i.state,
                         "poolStatus": "Excellent",
-                        "createdOn": formatted_date
+                        "createdOn": str(i.createdOn)
                     }
                     device_list.append(dictionary)
             return ({"organization":{
