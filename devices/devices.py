@@ -1,4 +1,4 @@
-from flask import Blueprint,jsonify
+from flask import Blueprint,jsonify,request
 from flask_restful import Api,Resource,reqparse
 from flask_jwt_extended import  jwt_required, get_jwt_identity
 from http import HTTPStatus
@@ -242,8 +242,8 @@ class DeviceMqttSetting(Resource):
 
 api.add_resource(DeviceMqttSetting,"/devicemqttconfig/")
 
-device_detail_args=reqparse.RequestParser()
-device_detail_args.add_argument("deviceId",type="str",help="DEVICEID",required=True)
+# device_detail_args=reqparse.RequestParser()
+# device_detail_args.add_argument("deviceId",type="str",help="DEVICEID",required=True)
 
 class GetDeviceData(Resource):
     MQTT_BROKER = "broker.hivemq.com"  # Use your own broker for production
@@ -311,8 +311,8 @@ class GetDeviceData(Resource):
         return output if output else None
 
     def get(self):
-        args=device_detail_args.parse_args()
-        device = DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
+        # args=device_detail_args.parse_args()
+        device = DeviceModel.objects.filter(deviceId=request.args.get("deviceId")).first()
         if device is None:
             return {
                 "status": "failed",
