@@ -45,6 +45,8 @@ class DeviceModel(Document):
     deviceChlorineDosingPumpOnOff=BooleanField(default=False)
 
     mqttTopic = StringField()
+    mqttTopicRead=StringField()
+    mqttTopicWrite=StringField()
 
     def __repr__(self):
         return f"{self.deviceId}-{self.customerName}"
