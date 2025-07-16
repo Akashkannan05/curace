@@ -322,7 +322,7 @@ class DeviceFilterFeedPumpOnOff(Resource):
             return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
         topic = device.sendingMqttTopic
         on_off(topic, "Filter Feed pump",args.get("onOff"))
-        device.deviceOzonePumpOnOff =  args.get("onOff") 
+        device.deviceFilterFeedPumpOnOff =  args.get("onOff") 
         device.save()
         return ({"deviceOnOff":"Success"},HTTPStatus.OK)
 
