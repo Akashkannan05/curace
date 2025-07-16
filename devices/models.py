@@ -31,8 +31,8 @@ class DeviceModel(Document):
     
     readingMqttTopic=StringField()
     sendingMqttTopic=StringField()
-    mqttTopicOriginalRead=StringField(required=True)
-    mqttTopicOriginalWrite=StringField(required=True)
+    mqttTopicOriginalRead=StringField()
+    mqttTopicOriginalWrite=StringField()
 
     deviceFilterFeedPumpOnOff=BooleanField(default=False)
     deviceOzonePumpOnOff=BooleanField(default=False)    
