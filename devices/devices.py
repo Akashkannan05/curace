@@ -171,6 +171,27 @@ class DeleteDevice(Resource):
     
 api.add_resource(DeleteDevice,"/delete/")
 
+class device_setting(Resource):
+    @jwt_required()
+    def get(self):
+        # device_id=request.args.get("deviceId")
+        device=DeviceModel.objects.filter(deviceId=request.args.get("deviceId")).first()
+        if device is None:
+            return ({"deviceSetting":"Failed","error":"Device not found"},HTTPStatus.NOT_FOUND)
+        output={
+            "minimumPh":device.minimumPh,
+            "maximumPh":device.maximumPh,
+            "minimumORP":device.minimumORP,
+            "maximumORP":device.maximumORP,
+            "minimumTemperature":device.minimumTemperature,
+            "maximumTemperature":device.maximumTemperature,
+            "readingMqttTopic":device.readingMqttTopic,
+            "sendingMqttTopic":device.sendingMqttTopic
+        }
+        return ({"deviceSetting":"Success","data":output},HTTPStatus.OK)
+api.add_resource(device_setting,"/deviceSetting/")
+
+
 device_value_config=reqparse.RequestParser()
 device_value_config.add_argument("deviceId",type=str,help="deviceId is required",required=True)
 device_value_config.add_argument("minimumPh",type=float,help="minimum pH value",required=True)
@@ -346,42 +367,3 @@ class GetDeviceData(Resource):
 
 # Register API endpoint
 api.add_resource(GetDeviceData, '/detail/')
-
-
-class checkMQTT(Resource):
-    def get(self):
-        MQTT_BROKER = "broker.hivemq.com"
-        MQTT_PORT = 1883
-        TOPIC = "uniqueeDevice/topic1"  # Change this to your actual topic
-
-        # Called when client connects to broker
-        def on_connect(client, userdata, flags, rc, properties=None):
-            print(f"Connected to MQTT broker with code {rc}")
-            client.subscribe(TOPIC)
-            print(f"Subscribed to topic: {TOPIC}")
-
-        # Called when message is received
-        def on_message(client, userdata, msg):
-            try:
-                payload = msg.payload.decode()
-                print(f"\n📥 Received on topic '{msg.topic}': {payload}")
-                data = json.loads(payload)
-                # Optional: Parse if format is like your API
-                if "input1" in data:
-                    for i in data["input1"]:
-                        return(f"🔹 Name: {i.get('name')}, Data: {i.get('data')}")
-            except json.JSONDecodeError as e:
-                print("❌ JSON Decode Error:", e)
-            except Exception as e:
-                print("❌ Unexpected error:", e)
-
-        # Set up client
-        client = mqtt.Client()
-        client.on_connect = on_connect
-        client.on_message = on_message
-
-        # Connect and loop forever
-        client.connect(MQTT_BROKER, MQTT_PORT, 60)
-        print("📡 Waiting for messages...")
-        client.loop_forever()
-api.add_resource(checkMQTT, '/checkmqtt/')
