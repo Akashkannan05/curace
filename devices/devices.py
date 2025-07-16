@@ -355,7 +355,7 @@ class checkMQTT(Resource):
         TOPIC = "uniqueeDevice/topic1"  # Change this to your actual topic
 
         # Called when client connects to broker
-        def on_connect(client, userdata, flags, rc):
+        def on_connect(client, userdata, flags, rc, properties=None):
             print(f"Connected to MQTT broker with code {rc}")
             client.subscribe(TOPIC)
             print(f"Subscribed to topic: {TOPIC}")
