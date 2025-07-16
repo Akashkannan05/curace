@@ -28,7 +28,9 @@ class ListOrganizationResource(Resource):
             current_user_email=get_jwt_identity()
             current_user=UserModel.objects.get(email=current_user_email)
             organization_id=current_user.organization
+            
             organization=OrganizationModel.objects.filter(pk=organization_id).first()
+            print(organization.name)
             if organization is None:
                return ({"Organization":"failed","error":"please fill the organozation for user"},HTTPStatus.BAD_REQUEST) 
             # if organization.customerType=="Owner":
