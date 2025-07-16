@@ -3,6 +3,7 @@ from flask_restful import Api,Resource,reqparse
 from flask_jwt_extended import  jwt_required, get_jwt_identity
 from http import HTTPStatus
 from cryptography.fernet import Fernet
+from datetime import datetime
 
 import os
 from .models import DeviceModel
@@ -85,13 +86,15 @@ class ListDevice(Resource):
         for i in devices:
             # objectId=fernet.encrypt(str(i.pk).encode()).decode()
             # "objectId":objectId,
+            dt = datetime.strptime(str(i.createdOn), "%a, %d %b %Y %H:%M:%S %Z")
+            formatted_date = dt.strftime("%Y-%m-%d")
             dictionary={
                 "deviceId":i.deviceId,
                 "customer":i.customerName,
                 "city":i.city,
                 "state":i.state,
                 "poolStatus":i.poolStatus,
-                "createdOn":str(i.createdOn)
+                "createdOn":formatted_date
             }
             output.append(dictionary)
 
@@ -133,7 +136,7 @@ api.add_resource(EditDevice,'/edit/')
 
 
 del_args_device=reqparse.RequestParser()
-del_args_device.add_argument("objectId",type=str,help="Object ID required",required=True)
+del_args_device.add_argument("deviceId",type=str,help="Object ID required",required=True)
 
 class DeleteDevice(Resource):
     @jwt_required()
@@ -146,9 +149,9 @@ class DeleteDevice(Resource):
         if user.userRole!="Admin" or user.status!="Active":
             return ({"deleteDevice":"Failed","error":"only active admin can delete the device"},HTTPStatus.BAD_REQUEST)
         print("........")
-        objectId=fernet.decrypt(args.get("objectId").encode()).decode()
-        print(objectId)
-        device=DeviceModel.objects.filter(pk=objectId).first()
+        # objectId=fernet.decrypt(args.get("objectId").encode()).decode()
+        # print(objectId)
+        device=DeviceModel.objects.filter(deviceId=args.get('deviceId')).first()
         if device is None:
             return ({"deleteDevice":"Failed","error":"Device not found"},HTTPStatus.NOT_FOUND)
         organization=OrganizationModel.objects.filter(pk=device.organization).first()

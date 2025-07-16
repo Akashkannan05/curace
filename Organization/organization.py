@@ -15,6 +15,8 @@ from .models import OrganizationModel
 from Users.models import UserModel
 from devices.models import DeviceModel
 
+from datetime import datetime
+
 organization_bp=Blueprint("organization",__name__)
 api=Api(organization_bp)
 load_dotenv()
@@ -343,17 +345,19 @@ class DetailOrganizationResource(Resource):
             device=DeviceModel.objects.filter(organization=organization.pk)
             if device is not None:
                 for i in device:
+                    dt = datetime.strptime(str(i.createdOn), "%a, %d %b %Y %H:%M:%S %Z")
+                    formatted_date = dt.strftime("%Y-%m-%d")
                     dictionary={
                         "id": i.deviceId,
                         "customer": i.customerName,
                         "city": i.city,
                         "state": i.state,
                         "poolStatus": "Excellent",
-                        "createdOn": str(i.createdOn)
+                        "createdOn": formatted_date
                     }
                     device_list.append(dictionary)
             return ({"organization":{
-                        "id": "ORG001",
+                        "id": objectId,
                         "organizationName":organization.name,
                         "customerType":organization.customerType,
                         "associatedPartner":assocaiteBy,
@@ -366,9 +370,9 @@ class DetailOrganizationResource(Resource):
                         "state":organization.state,
                         "country":organization.country,
                         "statistics": {
-                            "totalDevices": 150,
-                            "activeDevices": 120,
-                            "needAttention": 15
+                            "totalDevices": len(DeviceModel.objects.filter(organization=objectId)),
+                            "activeDevices": 0,
+                            "needAttention": 0
                             },
                         "devices": device_list,
                         "organizations":organization_list,
