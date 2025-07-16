@@ -217,7 +217,20 @@ class device_setting(Resource):
             "minimumTemperature":device.minimumTemperature,
             "maximumTemperature":device.maximumTemperature,
             "readingMqttTopic":device.readingMqttTopic,
-            "sendingMqttTopic":device.sendingMqttTopic
+            "sendingMqttTopic":device.sendingMqttTopic,
+
+            "mqttTopicOriginalRead":device.mqttTopicOriginalRead,
+            "mqttTopicOriginalWrite":device.mqttTopicOriginalWrite,
+
+            "deviceFilterFeedPumpOnOff":device.deviceFilterFeedPumpOnOff,
+            "deviceOzonePumpOnOff":device.deviceOzonePumpOnOff,
+            "deviceOxygenGeneratorOnOff":device.deviceOxygenGeneratorOnOff,
+            "deviceOzoneGeneratorOnOff":device.deviceOzoneGeneratorOnOff,
+            "devicePhDosingPumpOnOff":device.devicePhDosingPumpOnOff,
+            "deviceFlocculantDosingPumpOnOff":device.deviceFlocculantDosingPumpOnOff,
+            "deviceCoagulantDosingPumpOnOff":device.deviceCoagulantDosingPumpOnOff,
+            "deviceBackwashValveOnOff":device.deviceBackwashValveOnOff,
+            "deviceChlorineDosingPumpOnOff":device.deviceChlorineDosingPumpOnOff
         }
         return ({"deviceSetting":"Success","data":output},HTTPStatus.OK)
 api.add_resource(device_setting,"/deviceSetting/")
@@ -324,6 +337,8 @@ class DeviceOzonePumpOnOff(Resource):
             return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
         topic = device.sendingMqttTopic
         on_off(topic,"Ozone Pump",args.get("onOff"))
+        device.deviceOzonePumpOnOff =  args.get("onOff") 
+        device.save()
         return ({"deviceOnOff":"Success"},HTTPStatus.OK)
 
 api.add_resource(DeviceOzonePumpOnOff,"/deviceOzonePumpOnOff/")
@@ -339,6 +354,8 @@ class DeviceOxygenGeneratorOnOff(Resource):
             return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
         topic = device.sendingMqttTopic
         on_off(topic,"Oxygen Generator",args.get("onOff"))
+        device.deviceOxygenGeneratorOnOff = args.get("onOff")
+        device.save()
         return ({"deviceOnOff":"Success"},HTTPStatus.OK)
 
 api.add_resource(DeviceOxygenGeneratorOnOff,"/deviceOxygenGeneratorOnOff/")
@@ -354,6 +371,8 @@ class DeviceOzoneGeneratorOnOff(Resource):
             return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
         topic = device.sendingMqttTopic
         on_off(topic,"Ozone Generator",args.get("onOff"))
+        device.deviceOzoneGeneratorOnOff = args.get("onOff")
+        device.save()
         return ({"deviceOnOff":"Success"},HTTPStatus.OK)
 api.add_resource(DeviceOzoneGeneratorOnOff,"/deviceOzoneGeneratorOnOff/")
 
@@ -368,6 +387,8 @@ class DevicePhDosingPumpOnOff(Resource):
             return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
         topic = device.sendingMqttTopic
         on_off(topic,"PH Dosing Pump", args.get("onOff"))
+        device.devicePhDosingPumpOnOff = args.get("onOff")
+        device.save()
         return ({"deviceOnOff":"Success"},HTTPStatus.OK)
 api.add_resource(DevicePhDosingPumpOnOff,"/devicePhDosingPumpOnOff/")
 
@@ -382,6 +403,8 @@ class DeviceFlocculantDosingPumpOnOff(Resource):
             return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
         topic = device.sendingMqttTopic
         on_off(topic,"Flocculant Dosing Pump", args.get("onOff"))
+        device.deviceFlocculantDosingPumpOnOff = args.get("onOff")
+        device.save()
         return ({"deviceOnOff":"Success"},HTTPStatus.OK)
 api.add_resource(DeviceFlocculantDosingPumpOnOff,"/deviceFlocculantDosingPumpOnOff/")
 
@@ -395,6 +418,8 @@ class DeviceCoagulantDosingPumpOnOff(Resource):
             return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
         topic = device.sendingMqttTopic
         on_off(topic,"Coagulant Dosing Pump", args.get("onOff"))
+        device.deviceCoagulantDosingPumpOnOff = args.get("onOff")
+        device.save()
         return ({"deviceOnOff":"Success"},HTTPStatus.OK)
 api.add_resource(DeviceCoagulantDosingPumpOnOff,"/deviceCoagulantDosingPumpOnOff/")
 
@@ -408,6 +433,8 @@ class DeviceBackwashValveOnOff(Resource):
             return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
         topic = device.sendingMqttTopic
         on_off(topic,"Backwash Valve", args.get("onOff"))
+        device.deviceBackwashValveOnOff = args.get("onOff")
+        device.save()
         return ({"deviceOnOff":"Success"},HTTPStatus.OK)
 api.add_resource(DeviceBackwashValveOnOff,"/deviceBackwashValveOnOff/")
 
@@ -421,6 +448,8 @@ class DeviceChlorineDosingPumpOnOff(Resource):
             return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
         topic = device.sendingMqttTopic
         on_off(topic,"Chlorine Dosing Pump", args.get("onOff"))
+        device.deviceChlorineDosingPumpOnOff = args.get("onOff")
+        device.save()
         return ({"deviceOnOff":"Success"},HTTPStatus.OK)    
 api.add_resource(DeviceChlorineDosingPumpOnOff,"/deviceChlorineDosingPumpOnOff/")
 

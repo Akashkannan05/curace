@@ -31,8 +31,18 @@ class DeviceModel(Document):
     
     readingMqttTopic=StringField()
     sendingMqttTopic=StringField()
-    mqttTopic=StringField(required=True)
+    mqttTopicOriginalRead=StringField(required=True)
+    mqttTopicOriginalWrite=StringField(required=True)
 
-
+    deviceFilterFeedPumpOnOff=BooleanField(default=False)
+    deviceOzonePumpOnOff=BooleanField(default=False)    
+    deviceOxygenGeneratorOnOff=BooleanField(default=False)
+    deviceOzoneGeneratorOnOff=BooleanField(default=False)
+    devicePhDosingPumpOnOff=BooleanField(default=False)
+    deviceFlocculantDosingPumpOnOff=BooleanField(default=False)
+    deviceCoagulantDosingPumpOnOff=BooleanField(default=False)
+    deviceBackwashValveOnOff=BooleanField(default=False)
+    deviceChlorineDosingPumpOnOff=BooleanField(default=False)
+    
     def __repr__(self):
         return f"{self.deviceId}-{self.customerName}"
