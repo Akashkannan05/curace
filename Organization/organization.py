@@ -33,10 +33,10 @@ class ListOrganizationResource(Resource):
             print(organization.name)
             if organization is None:
                return ({"Organization":"failed","error":"please fill the organozation for user"},HTTPStatus.BAD_REQUEST) 
-            # if organization.customerType=="Owner":
-            #     organization_list=OrganizationModel.objects.all()
-            # else:
-            organization_list=OrganizationModel.objects.filter(assocaiteBy=organization.pk)
+            if organization.customerType=="Owner":
+                organization_list=OrganizationModel.objects.all()
+            else:
+                organization_list=OrganizationModel.objects.filter(assocaiteBy=organization.pk)
             List=[]
             columns=current_user.organizationColumns
             for i in organization_list:
