@@ -28,9 +28,7 @@ class ListOrganizationResource(Resource):
             current_user_email=get_jwt_identity()
             current_user=UserModel.objects.get(email=current_user_email)
             organization_id=current_user.organization
-            
             organization=OrganizationModel.objects.filter(pk=organization_id).first()
-            print(organization.name)
             if organization is None:
                return ({"Organization":"failed","error":"please fill the organozation for user"},HTTPStatus.BAD_REQUEST) 
             if organization.customerType=="Owner":
@@ -67,7 +65,7 @@ class ListOrganizationResource(Resource):
             return ({"organizations":"failed","error":"There is no account with this email"},HTTPStatus.NOT_FOUND)
         except Exception as e:
             return ({"organizations":"failed","error":"Something went wrong contact admin team"},HTTPStatus.CONFLICT)
-    
+
 api.add_resource(ListOrganizationResource,'/')
 
 add_organization_args=reqparse.RequestParser()
@@ -368,9 +366,9 @@ class DetailOrganizationResource(Resource):
                         "state":organization.state,
                         "country":organization.country,
                         "statistics": {
-                            "totalDevices": 150,
-                            "activeDevices": 120,
-                            "needAttention": 15
+                            "totalDevices": len(device_list),
+                            "activeDevices": 10,
+                            "needAttention": 1
                             },
                         "devices": device_list,
                         "organizations":organization_list,
