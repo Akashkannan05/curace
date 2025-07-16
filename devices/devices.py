@@ -86,15 +86,16 @@ class ListDevice(Resource):
         for i in devices:
             # objectId=fernet.encrypt(str(i.pk).encode()).decode()
             # "objectId":objectId,
-            dt = datetime.strptime(str(i.createdOn), "%a, %d %b %Y %H:%M:%S %Z")
-            formatted_date = dt.strftime("%Y-%m-%d")
+            # dt = datetime.strptime(str(i.createdOn), "%a, %d %b %Y %H:%M:%S %Z")
+            # formatted_date = dt.strftime("%Y-%m-%d")
+            print(str(i.createdOn))
             dictionary={
                 "deviceId":i.deviceId,
                 "customer":i.customerName,
                 "city":i.city,
                 "state":i.state,
                 "poolStatus":i.poolStatus,
-                "createdOn":formatted_date
+                "createdOn":str(i.createdOn)
             }
             output.append(dictionary)
 
