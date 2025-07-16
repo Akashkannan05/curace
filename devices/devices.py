@@ -309,7 +309,7 @@ api.add_resource(DeviceMqttSetting,"/devicemqttconfig/")
 
 device_on_off=reqparse.RequestParser()
 device_on_off.add_argument("deviceId",type=str,help="Device ID is required",required=True)
-device_on_off.add_argument("onOff",type=str,help="On or Off is required",required=True)
+device_on_off.add_argument("onOff",type=bool,help="On or Off is required",required=True)
 
 class DeviceFilterFeedPumpOnOff(Resource):
 
