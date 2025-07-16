@@ -43,6 +43,8 @@ class DeviceModel(Document):
     deviceCoagulantDosingPumpOnOff=BooleanField(default=False)
     deviceBackwashValveOnOff=BooleanField(default=False)
     deviceChlorineDosingPumpOnOff=BooleanField(default=False)
-    
+
+    mqttTopic = StringField()
+
     def __repr__(self):
         return f"{self.deviceId}-{self.customerName}"
