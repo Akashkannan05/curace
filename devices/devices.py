@@ -238,12 +238,12 @@ api.add_resource(device_setting,"/deviceSetting/")
 
 device_value_config=reqparse.RequestParser()
 device_value_config.add_argument("deviceId",type=str,help="deviceId is required",required=True)
-device_value_config.add_argument("minimumPh",type=float,help="minimum pH value",required=True)
-device_value_config.add_argument("maximumPh",type=float,help="maximum pH value",required=True)
-device_value_config.add_argument("minimumORP",type=int,help="minimum ORP value",required=True)
-device_value_config.add_argument("maximumORP",type=int,help="maximum ORP value",required=True)
-device_value_config.add_argument("minimumTemperature",type=int,help="minimum temperature value",required=True)
-device_value_config.add_argument("maximumTemperature",type=int,help="maximum temperature value",required=True)
+device_value_config.add_argument("minimumPh",type=str,help="minimum pH value",required=True)
+device_value_config.add_argument("maximumPh",type=str,help="maximum pH value",required=True)
+device_value_config.add_argument("minimumORP",type=str,help="minimum ORP value",required=True)
+device_value_config.add_argument("maximumORP",type=str,help="maximum ORP value",required=True)
+device_value_config.add_argument("minimumTemperature",type=str,help="minimum temperature value",required=True)
+device_value_config.add_argument("maximumTemperature",type=str,help="maximum temperature value",required=True)
 
 class DeviceValueSetting(Resource):
     def patch(self):
@@ -253,24 +253,24 @@ class DeviceValueSetting(Resource):
             return ({"editSetting":"Failed","error":"Device is not found"},HTTPStatus.NOT_FOUND)
         
         if args.get("minimumPh") is not None and args.get("maximumPh") is not None and (args.get("minimumPh")<args.get("maximumPh")):
-            device.minimumPh=args.get("minimumPh")
-            device.maximumPh=args.get("maximumPh")
-
+            device.minimumPh=float(args.get("minimumPh"))
+            device.maximumPh=float(args.get("maximumPh")
+)
         else:
             return ({"editSetting":"failed","error":"minimum pH value should be less than maximum pH"},HTTPStatus.BAD_REQUEST)
        
 
         if args.get("minimumORP") is not None and args.get("maximumORP") is not None and (args.get("minimumORP") < args.get("maximumORP")):
-            device.minimumORP=args.get("minimumORP")
-            device.maximumORP=args.get("maximumORP")
+            device.minimumORP=int(args.get("minimumORP"))
+            device.maximumORP=int(args.get("maximumORP"))
 
         else:
             return ({"editSetting":"failed","error":"minimum ORP value should be less than maximum ORP"},HTTPStatus.BAD_REQUEST)
            
 
         if args.get("minimumTemperature") is not None and args.get("maximumTemperature") is not None and (args.get("minimumTemperature") < args.get("maximumTemperature")):
-            device.minimumTemperature=args.get("minimumTemperature")
-            device.maximumTemperature=args.get("maximumTemperature")
+            device.minimumTemperature=int(args.get("minimumTemperature"))
+            device.maximumTemperature=int(args.get("maximumTemperature"))
 
         else:
             return ({"editSetting":"failed","error":"minimum Temperature value should be less than maximum Temperature"},HTTPStatus.BAD_REQUEST)
