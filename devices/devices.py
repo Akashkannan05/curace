@@ -21,13 +21,43 @@ api=Api(device_bp)
 
 load_dotenv()
 fernet=Fernet(os.getenv('ENCRYPTION_KEY').encode())
+register={
+    "Filter Feed pump":27,
+    "Ozone Pump":28,
+    "Oxygen Generator":29,
+    "Ozone Generator":30,
+    "PH Dosing Pump":31,
+    "Flocculant Dosing Pump":32,
+    "Coagulant Dosing Pump":33,
+    "Backwash Valve":34,
+    "Chlorine Dosing Pump":35
+}
 
 
+def on_off(topic, function_name,onOff=True):
+    client = mqtt.Client()
+    client.connect('broker.hivemq.com', 1883, 60)
+    payload = {
+        "cookie": 65432,
+        "type": 0,
+        "host": "192.168.0.164",
+        "port": 502,
+        "timeout": 3,
+        "server_id": 3,
+        "function": 5,
+        "register_number": register[function_name],
+        "coil_number": 26,
+        "value": 1 if onOff else 0
+        }
+    client.publish(topic, json.dumps(payload))
+    print(f"Published {payload} to {topic}")
+    client.disconnect()
 
 put_args_addDevice=reqparse.RequestParser()
 put_args_addDevice.add_argument("organizationId",type=str,help="Organization ID required",required=False)
 put_args_addDevice.add_argument("deviceId",type=str,help="Device ID required",required=True)
-put_args_addDevice.add_argument('mqttTopic',type=str,help="Mqtt topic is required",required=True)
+put_args_addDevice.add_argument('mqttTopicRead',type=str,help="Mqtt topic is required",required=True)
+put_args_addDevice.add_argument('mqttTopicWrite',type=str,help="Mqtt topic is required",required=True)
 
 class AddDevice(Resource):
     @jwt_required()
@@ -59,7 +89,8 @@ class AddDevice(Resource):
             poolStatus="Excellent",
             organization=organizationqs.pk,
             createdBy=user.pk,
-            mqttTopic=args.get('mqttTopic')
+            mqttTopicRead=args.get("mqttTopicRead"),
+            mqttTopicWrite=args.get("mqttTopicWrite"),
 
         )
 
@@ -262,6 +293,136 @@ class DeviceMqttSetting(Resource):
         return ({"editSetting":"Success"},HTTPStatus.OK)
 
 api.add_resource(DeviceMqttSetting,"/devicemqttconfig/")
+
+device_on_off=reqparse.RequestParser()
+device_on_off.add_argument("deviceId",type=str,help="Device ID is required",required=True)
+device_on_off.add_argument("onOff",type=str,help="On or Off is required",required=True)
+
+class DeviceFilterFeedPumpOnOff(Resource):
+
+    def patch(self):
+        args=device_on_off.parse_args()
+        device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
+        if device is None:
+            return ({"deviceOnOff":"Failed","error":"Device not found"},HTTPStatus.NOT_FOUND)
+        if device.sendingMqttTopic is None:
+            return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
+        topic = device.sendingMqttTopic
+        on_off(topic, "Filter Feed pump",args.get("onOff"))
+        return ({"deviceOnOff":"Success"},HTTPStatus.OK)
+
+api.add_resource(DeviceFilterFeedPumpOnOff,"/deviceFilterFeedPumpOnOff/")
+
+class DeviceOzonePumpOnOff(Resource):
+
+    def patch(self):
+        args=device_on_off.parse_args()
+        device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
+        if device is None:
+            return ({"deviceOnOff":"Failed","error":"Device not found"},HTTPStatus.NOT_FOUND)
+        if device.sendingMqttTopic is None:
+            return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
+        topic = device.sendingMqttTopic
+        on_off(topic,"Ozone Pump",args.get("onOff"))
+        return ({"deviceOnOff":"Success"},HTTPStatus.OK)
+
+api.add_resource(DeviceOzonePumpOnOff,"/deviceOzonePumpOnOff/")
+
+class DeviceOxygenGeneratorOnOff(Resource):
+
+    def patch(self):
+        args=device_on_off.parse_args()
+        device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
+        if device is None:
+            return ({"deviceOnOff":"Failed","error":"Device not found"},HTTPStatus.NOT_FOUND)
+        if device.sendingMqttTopic is None:
+            return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
+        topic = device.sendingMqttTopic
+        on_off(topic,"Oxygen Generator",args.get("onOff"))
+        return ({"deviceOnOff":"Success"},HTTPStatus.OK)
+
+api.add_resource(DeviceOxygenGeneratorOnOff,"/deviceOxygenGeneratorOnOff/")
+
+class DeviceOzoneGeneratorOnOff(Resource):
+
+    def patch(self):
+        args=device_on_off.parse_args()
+        device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
+        if device is None:
+            return ({"deviceOnOff":"Failed","error":"Device not found"},HTTPStatus.NOT_FOUND)
+        if device.sendingMqttTopic is None:
+            return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
+        topic = device.sendingMqttTopic
+        on_off(topic,"Ozone Generator",args.get("onOff"))
+        return ({"deviceOnOff":"Success"},HTTPStatus.OK)
+api.add_resource(DeviceOzoneGeneratorOnOff,"/deviceOzoneGeneratorOnOff/")
+
+class DevicePhDosingPumpOnOff(Resource):
+
+    def patch(self):
+        args=device_on_off.parse_args()
+        device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
+        if device is None:
+            return ({"deviceOnOff":"Failed","error":"Device not found"},HTTPStatus.NOT_FOUND)
+        if device.sendingMqttTopic is None:
+            return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
+        topic = device.sendingMqttTopic
+        on_off(topic,"PH Dosing Pump", args.get("onOff"))
+        return ({"deviceOnOff":"Success"},HTTPStatus.OK)
+api.add_resource(DevicePhDosingPumpOnOff,"/devicePhDosingPumpOnOff/")
+
+class DeviceFlocculantDosingPumpOnOff(Resource):
+
+    def patch(self):
+        args=device_on_off.parse_args()
+        device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
+        if device is None:
+            return ({"deviceOnOff":"Failed","error":"Device not found"},HTTPStatus.NOT_FOUND)
+        if device.sendingMqttTopic is None:
+            return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
+        topic = device.sendingMqttTopic
+        on_off(topic,"Flocculant Dosing Pump", args.get("onOff"))
+        return ({"deviceOnOff":"Success"},HTTPStatus.OK)
+api.add_resource(DeviceFlocculantDosingPumpOnOff,"/deviceFlocculantDosingPumpOnOff/")
+
+class DeviceCoagulantDosingPumpOnOff(Resource):
+    def patch(self):
+        args=device_on_off.parse_args()
+        device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
+        if device is None:
+            return ({"deviceOnOff":"Failed","error":"Device not found"},HTTPStatus.NOT_FOUND)
+        if device.sendingMqttTopic is None:
+            return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
+        topic = device.sendingMqttTopic
+        on_off(topic,"Coagulant Dosing Pump", args.get("onOff"))
+        return ({"deviceOnOff":"Success"},HTTPStatus.OK)
+api.add_resource(DeviceCoagulantDosingPumpOnOff,"/deviceCoagulantDosingPumpOnOff/")
+
+class DeviceBackwashValveOnOff(Resource):
+    def patch(self):
+        args=device_on_off.parse_args()
+        device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
+        if device is None:
+            return ({"deviceOnOff":"Failed","error":"Device not found"},HTTPStatus.NOT_FOUND)
+        if device.sendingMqttTopic is None:
+            return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
+        topic = device.sendingMqttTopic
+        on_off(topic,"Backwash Valve", args.get("onOff"))
+        return ({"deviceOnOff":"Success"},HTTPStatus.OK)
+api.add_resource(DeviceBackwashValveOnOff,"/deviceBackwashValveOnOff/")
+
+class DeviceChlorineDosingPumpOnOff(Resource):
+    def patch(self):
+        args=device_on_off.parse_args()
+        device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
+        if device is None:
+            return ({"deviceOnOff":"Failed","error":"Device not found"},HTTPStatus.NOT_FOUND)
+        if device.sendingMqttTopic is None:
+            return ({"deviceOnOff":"Failed","error":"Device MQTT topic not configured"},HTTPStatus.BAD_REQUEST)
+        topic = device.sendingMqttTopic
+        on_off(topic,"Chlorine Dosing Pump", args.get("onOff"))
+        return ({"deviceOnOff":"Success"},HTTPStatus.OK)    
+api.add_resource(DeviceChlorineDosingPumpOnOff,"/deviceChlorineDosingPumpOnOff/")
 
 # device_detail_args=reqparse.RequestParser()
 # device_detail_args.add_argument("deviceId",type="str",help="DEVICEID",required=True)
