@@ -135,7 +135,7 @@ class AddUserResourse(Resource):
                 status='Pending'
                 )
             new_user.save()
-            frontend_url="http://localhost:5173/#/set-password/"
+            frontend_url="https://iot.ozopool.in/#/set-password/"
             encrypted_email=fernet.encrypt(args.get('email').encode()).decode()
             body=f"This email is to inform the request of the adding user with this email use this link to set password and Active the account {frontend_url}{encrypted_email}"
             msg=Message(
@@ -196,7 +196,7 @@ class AddUserResourceThroughObjectId(Resource):
                 status='Pending'
                 )
             new_user.save()
-            frontend_url="http://localhost:5173/#/set-password/"
+            frontend_url="https://iot.ozopool.in/#/set-password/"
             encrypted_email=fernet.encrypt(args.get('email').encode()).decode()
             body=f"This email is to inform the request of the adding user with this email use this link to set password and Active the account {frontend_url}{encrypted_email}"
             msg=Message(
