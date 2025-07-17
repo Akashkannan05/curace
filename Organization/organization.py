@@ -134,7 +134,7 @@ class AddOrganizationResource(Resource):
             )
             organization.save()
             print("SAVeEDEDEDED")
-            frontend_url="http://localhost:5173/set-password/"
+            frontend_url="https://iot.ozopool.in/set-password/"
             encrypted_email=fernet.encrypt(args.get('email').encode())
             body=f"This email is to inform the adding organization with this email use this link to  Active the account {frontend_url}{encrypted_email}"
             msg=Message(
