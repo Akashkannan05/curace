@@ -477,6 +477,7 @@ class GetDeviceData(Resource):
             client.subscribe(topic)
 
         def on_message(client, userdata, msg):
+            print(f"Subscribing to topic: {topic}")
             nonlocal output
             try:
                 data = json.loads(msg.payload.decode())
@@ -522,7 +523,7 @@ class GetDeviceData(Resource):
             client.disconnect()
         except:
             pass
-        mqtt_thread.join(timeout=1)
+        mqtt_thread.join(timeout=5)
 
         return output if output else None
 
