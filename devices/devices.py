@@ -509,10 +509,12 @@ class GetDeviceData(Resource):
             client.disconnect()  # Exit loop_forever() and end thread
 
         client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
+        client.username_pw_set(username="farazan", password="abc123")
         client.on_connect = on_connect
         client.on_message = on_message
         client.connect(self.MQTT_BROKER, self.MQTT_PORT, 60)
-        client.username_pw_set(username="farazan", password="abc123")
+        print("📡 Waiting for messages...")
+        
 
         # Start MQTT loop in a separate thread
         mqtt_thread = threading.Thread(target=client.loop_forever)
@@ -529,6 +531,12 @@ class GetDeviceData(Resource):
 
     def get(self):
         # args=device_detail_args.parse_args()
+        print("Device ID:", request.args.get("deviceId"))
+        if request.args.get("deviceId") is None:
+            return {
+                "status": "failed",
+                "message": "Device ID is required"
+            }, 400
         device = DeviceModel.objects.filter(deviceId=request.args.get("deviceId")).first()
         if device is None:
             return {
