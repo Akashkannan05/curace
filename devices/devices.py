@@ -464,7 +464,7 @@ api.add_resource(DeviceChlorineDosingPumpOnOff,"/deviceChlorineDosingPumpOnOff/"
 # device_detail_args.add_argument("deviceId",type="str",help="DEVICEID",required=True)
 
 class GetDeviceData(Resource):
-    MQTT_BROKER = "broker.hivemq.com"  # Use your own broker for production
+    MQTT_BROKER = "ozoman.com" 
     MQTT_PORT = 1883
 
     def get_data_from_device(self,topic, timeout=5):
@@ -511,14 +511,12 @@ class GetDeviceData(Resource):
         client.on_connect = on_connect
         client.on_message = on_message
         client.connect(self.MQTT_BROKER, self.MQTT_PORT, 60)
+        client.username_pw_set(username="farazan", password="abc123")
 
         # Start MQTT loop in a separate thread
         mqtt_thread = threading.Thread(target=client.loop_forever)
         mqtt_thread.start()
 
-        # Wait for message or timeout
-        # mqtt_thread.join(timeout=timeout)
-        # client.disconnect()  # Just in case timeout happens before disconnect in on_message
         message_received.wait(timeout=timeout)
         try:
             client.disconnect()
