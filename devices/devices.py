@@ -63,7 +63,7 @@ def on_off(topic, function_name,onOff=True):
         print(f"Published {payload} to {topic}")
     else:
         print(f"Failed to publish message to {topic}")
-        
+
     time.sleep(1)  #wait for a moment to ensure message is sent
     client.loop_stop()
     client.disconnect()
@@ -267,6 +267,7 @@ device_value_config.add_argument("minimumTemperature",type=str,help="minimum tem
 device_value_config.add_argument("maximumTemperature",type=str,help="maximum temperature value",required=True)
 
 class DeviceValueSetting(Resource):
+    @jwt_required()
     def patch(self):
         args=device_value_config.parse_args()
         device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
@@ -310,6 +311,7 @@ device_mqtt_config.add_argument("mqttTopicWrite",type=str,help="sendingMqttTopic
 # device_mqtt_config.add_argument("mqttTopic",type=str,help="mqttTopic is required",required=True)
 
 class DeviceMqttSetting(Resource):
+    @jwt_required()
     def patch(self):
         args=device_mqtt_config.parse_args()
         device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
@@ -349,10 +351,11 @@ class DeviceFilterFeedPumpOnOff(Resource):
         return ({"deviceOnOff":"Success"},HTTPStatus.OK)
 
 api.add_resource(DeviceFilterFeedPumpOnOff,"/deviceFilterFeedPumpOnOff/")
-api.add_resource(DeviceFilterFeedPumpOnOff,"/deviceFilterFeedPumpOnOff/")
+
 
 class DeviceOzonePumpOnOff(Resource):
 
+    @jwt_required()
     def patch(self):
         args=device_on_off.parse_args()
         device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
@@ -370,6 +373,7 @@ api.add_resource(DeviceOzonePumpOnOff,"/deviceOzonePumpOnOff/")
 
 class DeviceOxygenGeneratorOnOff(Resource):
 
+    @jwt_required()
     def patch(self):
         args=device_on_off.parse_args()
         device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
@@ -387,6 +391,7 @@ api.add_resource(DeviceOxygenGeneratorOnOff,"/deviceOxygenGeneratorOnOff/")
 
 class DeviceOzoneGeneratorOnOff(Resource):
 
+    @jwt_required()
     def patch(self):
         args=device_on_off.parse_args()
         device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
@@ -403,6 +408,7 @@ api.add_resource(DeviceOzoneGeneratorOnOff,"/deviceOzoneGeneratorOnOff/")
 
 class DevicePhDosingPumpOnOff(Resource):
 
+    @jwt_required()
     def patch(self):
         args=device_on_off.parse_args()
         device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
@@ -418,7 +424,7 @@ class DevicePhDosingPumpOnOff(Resource):
 api.add_resource(DevicePhDosingPumpOnOff,"/devicePhDosingPumpOnOff/")
 
 class DeviceFlocculantDosingPumpOnOff(Resource):
-
+    @jwt_required()
     def patch(self):
         args=device_on_off.parse_args()
         device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
@@ -434,6 +440,7 @@ class DeviceFlocculantDosingPumpOnOff(Resource):
 api.add_resource(DeviceFlocculantDosingPumpOnOff,"/deviceFlocculantDosingPumpOnOff/")
 
 class DeviceCoagulantDosingPumpOnOff(Resource):
+    @jwt_required()
     def patch(self):
         args=device_on_off.parse_args()
         device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
@@ -449,6 +456,7 @@ class DeviceCoagulantDosingPumpOnOff(Resource):
 api.add_resource(DeviceCoagulantDosingPumpOnOff,"/deviceCoagulantDosingPumpOnOff/")
 
 class DeviceBackwashValveOnOff(Resource):
+    @jwt_required()
     def patch(self):
         args=device_on_off.parse_args()
         device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
@@ -464,6 +472,7 @@ class DeviceBackwashValveOnOff(Resource):
 api.add_resource(DeviceBackwashValveOnOff,"/deviceBackwashValveOnOff/")
 
 class DeviceChlorineDosingPumpOnOff(Resource):
+    @jwt_required()
     def patch(self):
         args=device_on_off.parse_args()
         device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
@@ -546,7 +555,8 @@ class GetDeviceData(Resource):
         mqtt_thread.join(timeout=5)
 
         return output if output else None
-
+    
+    @jwt_required()
     def get(self):
         # args=device_detail_args.parse_args()
         print("Device ID:", request.args.get("deviceId"))
