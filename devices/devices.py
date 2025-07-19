@@ -6,6 +6,7 @@ from cryptography.fernet import Fernet
 from datetime import datetime
 from werkzeug.security import check_password_hash
 
+import time
 import os
 from .models import DeviceModel
 from Users.models import UserModel
@@ -34,10 +35,16 @@ register={
     "Chlorine Dosing Pump":35
 }
 
+MQTT_BROKER = "ozoman.com" 
+MQTT_PORT = 1883
 
 def on_off(topic, function_name,onOff=True):
-    client = mqtt.Client()
-    client.connect('broker.hivemq.com', 1883, 60)
+
+   
+    client=mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2,client_id="akashash145")
+    client.username_pw_set(username="farazan", password="abc123")
+    client.connect(MQTT_BROKER, MQTT_PORT, 60)
+    client.loop_start()
     payload = {
         "cookie": 65432,
         "type": 0,
@@ -50,9 +57,18 @@ def on_off(topic, function_name,onOff=True):
         "coil_number": 26,
         "value": 1 if onOff else 0
         }
-    client.publish(topic, json.dumps(payload))
-    print(f"Published {payload} to {topic}")
+    result = client.publish(topic, json.dumps(payload))
+    status = result[0]
+    if status == 0:
+        print(f"Published {payload} to {topic}")
+    else:
+        print(f"Failed to publish message to {topic}")
+        
+    time.sleep(1)  #wait for a moment to ensure message is sent
+    client.loop_stop()
     client.disconnect()
+    client.publish(topic, json.dumps(payload))
+
 
 put_args_addDevice=reqparse.RequestParser()
 put_args_addDevice.add_argument("organizationId",type=str,help="Organization ID required",required=False)
@@ -318,6 +334,7 @@ device_on_off.add_argument("onOff",type=bool,help="On or Off is required",requir
 
 class DeviceFilterFeedPumpOnOff(Resource):
 
+    @jwt_required()
     def patch(self):
         args=device_on_off.parse_args()
         device=DeviceModel.objects.filter(deviceId=args.get("deviceId")).first()
@@ -331,6 +348,7 @@ class DeviceFilterFeedPumpOnOff(Resource):
         device.save()
         return ({"deviceOnOff":"Success"},HTTPStatus.OK)
 
+api.add_resource(DeviceFilterFeedPumpOnOff,"/deviceFilterFeedPumpOnOff/")
 api.add_resource(DeviceFilterFeedPumpOnOff,"/deviceFilterFeedPumpOnOff/")
 
 class DeviceOzonePumpOnOff(Resource):
